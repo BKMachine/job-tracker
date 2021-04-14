@@ -1,7 +1,9 @@
 <template>
-  <v-row>
-    <v-data-table :items="jobs" :headers="headers"> </v-data-table>
-  </v-row>
+  <v-container>
+    <v-row class="justify-center">
+      <v-data-table :items="jobs" :headers="headers"> </v-data-table>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
