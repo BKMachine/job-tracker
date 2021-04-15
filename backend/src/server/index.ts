@@ -16,7 +16,8 @@ app.use(
     credentials: true,
   }),
 )
-app.use(morgan('dev'))
+
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
 
 app.use(App)
 
@@ -25,3 +26,5 @@ export function listen(): void {
   app.listen(port)
   consola.success({ message: `Listening on port: ${port}`, badge: true })
 }
+
+export default app

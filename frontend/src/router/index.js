@@ -1,3 +1,4 @@
+import Customers from '@/views/Customers'
 import Home from '@/views/Home.vue'
 import Inventory from '@/views/Inventory'
 import Vue from 'vue'
@@ -15,6 +16,11 @@ const routes = [
     path: '/inventory',
     name: 'inventory',
     component: Inventory,
+  },
+  {
+    path: '/customers',
+    name: 'customers',
+    component: Customers,
   },
 ]
 
