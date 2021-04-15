@@ -3,7 +3,7 @@
     <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-container>
       <v-row justify="center" class="mt-10">
-        <v-col cols="8">
+        <v-col cols="10">
           <v-data-table
             :headers="headers"
             :items="customers"
@@ -107,6 +107,14 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
+              <v-icon
+                v-if="item.address"
+                small
+                class="mr-2"
+                @click="openMap(item)"
+              >
+                mdi-map-marker
+              </v-icon>
               <v-icon small class="mr-2" @click="editItem(item)">
                 mdi-pencil
               </v-icon>
@@ -235,6 +243,11 @@ export default {
         this.editedItem = {}
         this.editedIndex = -1
       })
+    },
+    openMap(item) {
+      const query = encodeURIComponent(`${item.name} ${item.address}`)
+      const url = `https://www.google.com/maps/search/?api=1&query=${query}`
+      window.open(url, '_blank')
     },
   },
 }
