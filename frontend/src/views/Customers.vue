@@ -10,6 +10,8 @@
             sort-by="name"
             class="elevation-2"
             :search="search"
+            hide-default-footer
+            disable-pagination
           >
             <template v-slot:top>
               <v-toolbar flat>
@@ -86,7 +88,7 @@
                       {{ editedItem.name }}
                     </v-card-title>
                     <v-card-text>
-                      Are you sure you want to delete this item?
+                      Are you sure you want to delete this customer?
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer />
@@ -107,18 +109,21 @@
               </v-toolbar>
             </template>
             <template v-slot:item.actions="{ item }">
-              <v-icon
-                v-if="item.address"
-                small
-                class="mr-2"
-                @click="openMap(item)"
-              >
-                mdi-map-marker
-              </v-icon>
-              <v-icon small class="mr-2" @click="editItem(item)">
-                mdi-pencil
-              </v-icon>
-              <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              <v-row class="mr-0">
+                <v-spacer></v-spacer>
+                <v-icon
+                  v-if="item.address"
+                  small
+                  class="mr-2"
+                  @click="openMap(item)"
+                >
+                  mdi-map-marker
+                </v-icon>
+                <v-icon small class="mr-2" @click="editItem(item)">
+                  mdi-pencil
+                </v-icon>
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              </v-row>
             </template>
           </v-data-table>
         </v-col>
@@ -155,11 +160,11 @@ export default {
           value: 'address',
           filterable: false,
         },
-        {
+        /*{
           text: 'Contact',
           value: 'contact',
           filterable: false,
-        },
+        },*/
         {
           text: 'Phone',
           value: 'phone',
@@ -253,4 +258,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style>
+tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+</style>
