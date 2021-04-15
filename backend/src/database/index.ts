@@ -7,6 +7,7 @@ const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
+  useCreateIndex: true,
 }
 
 export async function connect(mongoUrl?: string): Promise<void> {
