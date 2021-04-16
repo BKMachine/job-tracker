@@ -3,7 +3,7 @@ services:
   frontend:
     restart: always
     build: ./frontend
-    container_name: frontend
+    container_name: job-tracker-frontend
     ports:
       - "80:80"
     volumes:
@@ -14,7 +14,7 @@ services:
   backend:
     restart: always
     build: ./backend
-    container_name: backend
+    container_name: job-tracker-backend
     networks:
       - jobtracker
 
