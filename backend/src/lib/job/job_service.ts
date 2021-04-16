@@ -13,8 +13,8 @@ function getNextJobNumber(): Promise<number> {
   })
 }
 
-async function getJob(id: string): Promise<JobDoc | null> {
-  return Job.findById(id)
+async function getJob(id: number): Promise<JobDoc | null> {
+  return Job.findOne({ id })
 }
 
 export default {

@@ -23,9 +23,9 @@ router.get('/jobs/next', async (req, res, next) => {
 
 router.get('/job/:id', async (req, res, next) => {
   if (!/^\d+$/.test(req.params.id))
-    return res.status(400).json({ message: 'Only numbers allowed in Job ID' })
+    return res.status(400).json({ message: 'The Job ID must be a number.' })
   try {
-    const job = await JobService.getJob(req.params.id)
+    const job = await JobService.getJob(parseInt(req.params.id))
     if (!job) return res.sendStatus(404)
     res.status(200).json(job)
   } catch (e) {
