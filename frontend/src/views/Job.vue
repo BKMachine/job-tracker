@@ -1,6 +1,6 @@
 <template>
-  <v-container v-if="!loading" fill-height fluid>
-    <v-row justify="center" align="center">
+  <v-container v-if="!loading">
+    <v-row justify="center">
       <div v-if="notFound">
         <h1>Job #{{ $route.params.id }} does not exist.</h1>
       </div>
@@ -11,7 +11,17 @@
         </h1>
       </div>
       <div v-else>
-        <h1>{{ $route.params.id }}</h1>
+        <v-card>
+          <v-card-title>
+            Job #{{ job.id }}
+            <v-spacer></v-spacer>
+            Status: {{ job.closed ? 'Closed' : 'Open' }}
+          </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="job.customer" label="Customer">
+            </v-text-field>
+          </v-card-text>
+        </v-card>
       </div>
     </v-row>
   </v-container>
