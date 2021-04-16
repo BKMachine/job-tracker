@@ -1,6 +1,5 @@
 <template>
   <div>
-    <v-progress-linear v-if="loading" indeterminate></v-progress-linear>
     <v-container>
       <v-row justify="center" class="mt-10">
         <v-col cols="10">
@@ -12,6 +11,7 @@
             :search="search"
             hide-default-footer
             disable-pagination
+            :loading="loading"
           >
             <template v-slot:top>
               <v-toolbar flat>
@@ -44,6 +44,7 @@
                               v-model="editedItem.name"
                               label="Name"
                               required
+                              :autofocus="editedIndex === -1"
                             />
                           </v-col>
                         </v-row>
