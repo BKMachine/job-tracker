@@ -1,5 +1,4 @@
 import { Document, Schema, model } from 'mongoose'
-// import autoIncrement from 'mongoose-auto-increment'
 import CountService from '../count'
 
 const schema = new Schema({
@@ -22,11 +21,5 @@ schema.pre('save', async function (next) {
   }
   next()
 })
-
-/*schema.plugin(autoIncrement.plugin, {
-  model: 'jobs',
-  field: 'id',
-  startAt: 1,
-})*/
 
 export default model<JobDoc>('jobs', schema)
