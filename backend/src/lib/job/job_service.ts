@@ -17,8 +17,23 @@ async function getJob(id: number): Promise<JobDoc | null> {
   return Job.findOne({ id })
 }
 
+async function create(data: unknown): Promise<JobDoc> {
+  return new Job(data).save()
+}
+
+async function getJobs(limit = 100, page = 1): Promise<JobDoc[]> {
+  return Job.find()
+    .limit(limit)
+    .skip(limit * (page - 1))
+    .sort({
+      id: 'asc',
+    })
+}
+
 export default {
   listOpenJobs,
   getNextJobNumber,
   getJob,
+  create,
+  getJobs,
 }

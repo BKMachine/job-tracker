@@ -3,7 +3,7 @@ import JobService from '../../lib/job'
 
 const router = express.Router()
 
-router.get('/jobs', async (req, res, next) => {
+router.get('/jobs/open', async (req, res, next) => {
   try {
     const jobs = await JobService.listOpenJobs()
     res.status(200).json(jobs)
@@ -28,6 +28,30 @@ router.get('/job/:id', async (req, res, next) => {
     const job = await JobService.getJob(parseInt(req.params.id))
     if (!job) return res.sendStatus(404)
     res.status(200).json(job)
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.post('/jobs', async (req, res, next) => {
+  try {
+    const newJob = await JobService.create(req.body)
+    res.status(201).json(newJob)
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.get('/jobs', async (req, res, next) => {
+  console.log(req.query)
+  const { limit, page } = req.query
+  const limitNum = parseInt(limit as string)
+  const pageNum = parseInt(page as string)
+  const l = Number.isNaN(limitNum) ? undefined : limitNum
+  const p = Number.isNaN(pageNum) ? undefined : pageNum
+  try {
+    const jobs = await JobService.getJobs(l, p)
+    res.status(200).json(jobs)
   } catch (e) {
     next(e)
   }

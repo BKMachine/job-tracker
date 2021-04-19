@@ -40,4 +40,13 @@ router
     }
   })
 
+router.get('/customers/names', async (req, res, next) => {
+  try {
+    const names = await CustomerService.listNames()
+    res.status(200).json(names)
+  } catch (e) {
+    next(e)
+  }
+})
+
 export default router

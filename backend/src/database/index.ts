@@ -1,9 +1,7 @@
 import mongoose from 'mongoose'
-import autoIncrement from 'mongoose-auto-increment'
 import consola from '../consola'
 
 mongoose.Promise = global.Promise
-autoIncrement.initialize(mongoose.connection)
 
 const options = {
   useNewUrlParser: true,
