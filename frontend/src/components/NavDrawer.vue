@@ -2,8 +2,8 @@
   <v-navigation-drawer permanent app>
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="title"
-          ><v-avatar>
+        <v-list-item-title class="title">
+          <v-avatar>
             <img src="@/assets/logo.png" alt="Logo" />
           </v-avatar>
           Job Tracker
@@ -39,16 +39,16 @@ export default {
     return {
       items: [
         { title: 'Dashboard', icon: 'mdi-view-dashboard', route: '/' },
-        { title: 'Jobs', icon: 'mdi-barcode', route: 'jobs' },
+        { title: 'Jobs', icon: 'mdi-barcode', route: '/jobs' },
         {
           title: 'Inventory',
           icon: 'mdi-format-list-bulleted',
-          route: 'inventory',
+          route: '/inventory',
         },
         {
           title: 'Customers',
           icon: 'mdi-account-multiple',
-          route: 'customers',
+          route: '/customers',
         },
       ],
     }
