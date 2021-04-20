@@ -1,7 +1,13 @@
 <template>
   <v-container>
-    <v-row justify="center" class="mt-10">
+    <v-row justify="center" class="mt-6">
       <v-col cols="10">
+        <v-container class="mb-4">
+          <v-row>
+            <v-spacer />
+            <v-btn>Add Filter</v-btn>
+          </v-row>
+        </v-container>
         <v-data-table
           :headers="headers"
           :items="parts"
@@ -11,6 +17,7 @@
           hide-default-footer
           disable-pagination
           :loading="loading"
+          @dblclick:row="openPart"
         >
           <template v-slot:top>
             <v-toolbar flat>
@@ -138,11 +145,12 @@ export default {
         {
           text: 'Name',
           value: 'name',
+          filterable: true,
         },
         {
-          text: 'Address',
-          value: 'address',
-          filterable: false,
+          text: 'Customer',
+          value: 'customer',
+          filterable: true,
         },
         /*{
           text: 'Contact',
@@ -150,8 +158,8 @@ export default {
           filterable: false,
         },*/
         {
-          text: 'Phone',
-          value: 'phone',
+          text: 'In Stock',
+          value: 'stock.quantity',
           filterable: false,
         },
         {
@@ -232,6 +240,9 @@ export default {
         this.editedItem = {}
         this.editedIndex = -1
       })
+    },
+    openPart(event, item) {
+      this.$router.push(`/inventory/${item.item._id}`)
     },
   },
 }
