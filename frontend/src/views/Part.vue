@@ -67,17 +67,37 @@
                 </v-container>
                 <v-container>
                   <v-row class="text-h6">
-                    Material
-                    <v-spacer />
-                    <span class="ml-2 text-subtitle-2">
-                      Parts per 12' length
-                      <span class="font-weight-bold">
-                        {{ partsPerLength }}
-                      </span>
-                    </span>
+                    <v-col cols="3"> Material </v-col>
+                    <v-col cols="3" style="text-align: center">
+                      <v-radio-group
+                        v-model="part.material.shape"
+                        row
+                        class="pa-0 ma-0 mt-1"
+                      >
+                        <v-radio label="Square" value="square" />
+                        <v-radio label="Round" value="round" />
+                      </v-radio-group>
+                    </v-col>
+                    <v-col cols="3" style="text-align: center">
+                      <v-radio-group row class="pa-0 ma-0 mt-1">
+                        <v-radio label="Solid" value="solid" />
+                        <v-radio label="Tubing" value="tubing" />
+                      </v-radio-group>
+                    </v-col>
+                    <v-col cols="3" style="text-align: center">
+                      <v-radio-group
+                        v-model="part.material.workpiece"
+                        :disabled="part.material.shape === 'square'"
+                        row
+                        class="pa-0 ma-0 mt-1"
+                      >
+                        <v-radio label="Bars" value="bars" />
+                        <v-radio label="Blanks" value="blanks" />
+                      </v-radio-group>
+                    </v-col>
                   </v-row>
                   <v-row>
-                    <v-col cols="10">
+                    <v-col cols="12">
                       <v-row>
                         <v-col cols="6">
                           <v-text-field
@@ -122,19 +142,6 @@
                         </v-col>
                       </v-row>
                     </v-col>
-                    <v-col cols="2">
-                      <v-radio-group v-model="part.material.shape">
-                        <v-radio label="Square" value="square" />
-                        <v-radio label="Round" value="round" />
-                      </v-radio-group>
-                      <v-radio-group
-                        v-model="part.material.workpiece"
-                        :disabled="part.material.shape !== 'round'"
-                      >
-                        <v-radio label="Bars" value="bars" />
-                        <v-radio label="Blanks" value="blanks" />
-                      </v-radio-group>
-                    </v-col>
                   </v-row>
                 </v-container>
               </v-form>
@@ -147,7 +154,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+// import _ from 'lodash'
 
 export default {
   name: 'Part',
@@ -178,11 +185,23 @@ export default {
     }
   },
   watch: {
-    part: {
+    /*part: {
       handler() {
         this.isEdited = !_.isEqual(this.part, this.originalPart)
       },
       deep: true,
+    },*/
+    'part.material.shape'(val) {
+      if (val === 'square') {
+        this.$nextTick(() => {
+          this.part.material.diameter = null
+          this.part.material.workpiece = 'blanks'
+          this.$forceUpdate()
+        })
+      } else {
+        this.part.material.height = null
+        this.part.material.width = null
+      }
     },
   },
   computed: {
@@ -245,13 +264,14 @@ export default {
 <style scoped>
 .v-card__title {
   background-color: #c58cff;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
 }
 .v-card__title.editing {
   /*background-color: #f78cff;*/
 }
-.col {
+.v-card__text .col {
   padding-bottom: 0;
+  padding-top: 0;
 }
 </style>
