@@ -5,9 +5,9 @@
       <v-row justify="center">
         <v-col cols="10">
           <v-card light>
-            <v-card-title>
+            <v-card-title :class="{ editing: isEdited }">
               <div class="text-h4">{{ partName }}</div>
-              <v-divider vertical class="mx-4 mt-2 mb-2"></v-divider>
+              <v-divider vertical class="mx-4 mt-0 mb-0"></v-divider>
               <v-icon class="mr-1">mdi-history</v-icon>
               <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
               <div class="text-body-1">
@@ -23,12 +23,15 @@
                 </span>
               </div>
               <v-spacer />
-              <v-switch v-model="editing" label="Edit"></v-switch>
+              <div v-if="isEdited">
+                <v-btn class="red lighten-2 mr-2" @click="cancel">Cancel</v-btn>
+                <v-btn class="green lighten-2" @click="save">Save</v-btn>
+              </div>
             </v-card-title>
             <v-card-text>
-              <v-form v-model="valid" :readonly="!editing">
+              <v-form v-model="valid" @change="isEdited === true">
                 <v-container>
-                  <v-row class="mt-2">
+                  <v-row class="mt-0">
                     <v-col cols="5">
                       <v-text-field
                         v-model="part.name"
@@ -58,94 +61,85 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12">
-                      <v-textarea
-                        v-model="part.notes"
-                        label="Notes"
-                        auto-grow
-                      />
+                      <v-textarea v-model="part.notes" label="Notes" />
                     </v-col>
                   </v-row>
                 </v-container>
                 <v-container>
-                  <v-row>
-                    <v-col cols="2" class="text-h6"> Material </v-col>
+                  <v-row class="text-h6">
+                    Material
                     <v-spacer />
-                    <v-col cols="4">
-                      <v-radio-group
-                        v-model="part.material.shape"
-                        label="Shape"
-                        row
-                      >
+                    <span class="ml-2 text-subtitle-2">
+                      Parts per 12' length
+                      <span class="font-weight-bold">
+                        {{ partsPerLength }}
+                      </span>
+                    </span>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="10">
+                      <v-row>
+                        <v-col cols="6">
+                          <v-text-field
+                            v-model="part.material.materialType"
+                            label="Type"
+                            :rules="rules.req"
+                          />
+                        </v-col>
+                        <v-col v-if="part.material.shape === 'round'" cols="2">
+                          <v-text-field
+                            v-model="part.material.diameter"
+                            label="Diameter"
+                            :rules="rules.number"
+                          />
+                        </v-col>
+                        <v-col v-else cols="2">
+                          <v-text-field
+                            v-model="part.material.height"
+                            label="Height"
+                            :rules="rules.number"
+                          />
+                          X
+                          <v-text-field
+                            v-model="part.material.width"
+                            label="Width"
+                            :rules="rules.number"
+                          />
+                        </v-col>
+                        <v-col cols="2">
+                          <v-text-field
+                            v-model="part.material.partLength"
+                            label="Finish Length"
+                            :rules="rules.number"
+                          />
+                        </v-col>
+                        <v-col cols="2">
+                          <v-text-field
+                            v-model="part.material.cutLength"
+                            label="Saw Length"
+                            :rules="rules.number"
+                          />
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-radio-group v-model="part.material.shape">
                         <v-radio label="Square" value="square" />
                         <v-radio label="Round" value="round" />
                       </v-radio-group>
-                    </v-col>
-                    <v-col cols="4">
                       <v-radio-group
                         v-model="part.material.workpiece"
                         :disabled="part.material.shape !== 'round'"
-                        row
                       >
                         <v-radio label="Bars" value="bars" />
                         <v-radio label="Blanks" value="blanks" />
                       </v-radio-group>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <v-col cols="3">
-                      <v-text-field
-                        v-model="part.material.materialType"
-                        label="Type"
-                      />
-                    </v-col>
-                    <v-col v-if="part.material.shape === 'round'" cols="5">
-                      <v-text-field
-                        v-model="part.material.diameter"
-                        label="Diameter"
-                      />
-                    </v-col>
-                    <v-col v-else cols="5">
-                      <v-text-field
-                        v-model="part.material.height"
-                        label="Height"
-                      />
-                      X
-                      <v-text-field
-                        v-model="part.material.width"
-                        label="Width"
-                      />
-                    </v-col>
-                    <v-col cols="3">
-                      <v-text-field
-                        v-model="part.materialLength"
-                        label="Cut Length"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-text-field
-                      readonly
-                      label="Parts per 12' length"
-                      :value="partsPerLength"
-                    />
-                  </v-row>
                 </v-container>
               </v-form>
             </v-card-text>
           </v-card>
-          <v-container>
-            <v-row class="mt-4">
-              <v-spacer />
-              <v-btn
-                v-if="editing"
-                color="blue"
-                :disabled="!valid"
-                @click="save"
-              >
-                Save
-              </v-btn>
-            </v-row>
-          </v-container>
         </v-col>
       </v-row>
     </v-container>
@@ -153,34 +147,52 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   name: 'Part',
   data() {
     return {
       customers: [],
+      isEdited: false,
       editing: false,
       loading: true,
       part: {
         material: {},
         stock: {},
       },
+      originalPart: {
+        material: {},
+        stock: {},
+      },
       valid: null,
       rules: {
         req: [(val) => (val || '').length > 0 || 'This field is required'],
+        number: [
+          (val) => {
+            if (!val) return true
+            return /^[0-9.]+$/.test(val) || 'Must be a number.'
+          },
+        ],
       },
     }
   },
+  watch: {
+    part: {
+      handler() {
+        this.isEdited = !_.isEqual(this.part, this.originalPart)
+      },
+      deep: true,
+    },
+  },
   computed: {
     partsPerLength() {
-      if (!this.part.materialLength) return 'null'
-      const length = parseFloat(this.part.materialLength)
+      if (!this.part.material.partLength) return 'null'
+      const length = parseFloat(this.part.material.partLength)
       return Math.floor(144 / length)
     },
-    materialSizeLabel() {
-      if (this.part.materialShape === 'bars') return 'Diameter'
-      return 'Size'
-    },
     partName() {
+      if (this.part.name && this.isEdited) return `Editing: ${this.part.name}`
       return this.part.name || 'New Part'
     },
   },
@@ -189,10 +201,11 @@ export default {
       await this.$axios
         .get(`/part/${this.$route.params.id}`)
         .then(({ data }) => {
-          this.part = data
+          this.part = Object.assign({}, data)
+          this.originalPart = Object.assign({}, data)
         })
     } else {
-      this.editing = true
+      this.isEdited = true
     }
     await this.$axios.get('/customers/names').then(({ data }) => {
       this.customers = data
@@ -200,22 +213,26 @@ export default {
     this.loading = false
   },
   beforeRouteLeave(to, from, next) {
-    if (!this.editing) return next()
+    if (!this.isEdited) return next()
     const answer = window.confirm(
       'Do you really want to leave? you have unsaved changes!',
     )
     if (answer) {
-      this.editing = false
+      this.isEdited = false
       next()
     } else {
       next(false)
     }
   },
   methods: {
+    cancel() {
+      this.part = Object.assign({}, this.originalPart)
+    },
     save() {
       if (!this.valid) return
       this.$axios.put('/part', this.part).then(() => {
-        this.editing = false
+        this.originalPart = { ...this.part }
+        this.isEdited = false
       })
     },
     required(val) {
@@ -228,7 +245,13 @@ export default {
 <style scoped>
 .v-card__title {
   background-color: #c58cff;
-  padding-top: 0.25em;
-  padding-bottom: 0.25em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+.v-card__title.editing {
+  /*background-color: #f78cff;*/
+}
+.col {
+  padding-bottom: 0;
 }
 </style>
