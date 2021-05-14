@@ -9,6 +9,7 @@
     "prettier": "prettier --write \"**/*.{js,ts,md,*rc,json,vue}\" --ignore-path .gitignore"
   },
   "dependencies": {
+    "@braid/vue-formulate": "^2.5.2",
     "axios": "^0.21.1",
     "axios-retry": "^3.1.9",
     "core-js": "^3.6.5",

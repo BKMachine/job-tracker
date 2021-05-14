@@ -16,4 +16,6 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+@import '../node_modules/@braid/vue-formulate/themes/snow/snow.scss';
+</style>

@@ -52,6 +52,20 @@
                     </v-col>
                   </v-row>
                   <v-row>
+                    <div v-if="part.image">
+                      <img :src="part.image" alt="part image" />
+                    </div>
+                    <div v-else>
+                      <FormulateInput
+                        type="image"
+                        name="part"
+                        label="Select an image to upload"
+                        help="Select a png or jpg to upload."
+                        validation="mime:image/jpeg,image/png"
+                      />
+                    </div>
+                  </v-row>
+                  <v-row>
                     <v-col cols="12">
                       <v-text-field
                         v-model="part.description"
