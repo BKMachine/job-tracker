@@ -52,20 +52,6 @@
                     </v-col>
                   </v-row>
                   <v-row>
-                    <div v-if="part.image">
-                      <img :src="part.image" alt="part image" />
-                    </div>
-                    <div v-else>
-                      <FormulateInput
-                        type="image"
-                        name="part"
-                        label="Select an image to upload"
-                        help="Select a png or jpg to upload."
-                        validation="mime:image/jpeg,image/png"
-                      />
-                    </div>
-                  </v-row>
-                  <v-row>
                     <v-col cols="12">
                       <v-text-field
                         v-model="part.description"
@@ -160,6 +146,11 @@
                 </v-container>
               </v-form>
             </v-card-text>
+            <v-row>
+              <v-col>
+                <PartImages :images="part.images" />
+              </v-col>
+            </v-row>
           </v-card>
         </v-col>
       </v-row>
@@ -169,9 +160,13 @@
 
 <script>
 // import _ from 'lodash'
+import PartImages from '@/components/PartImages'
 
 export default {
   name: 'Part',
+  components: {
+    PartImages,
+  },
   data() {
     return {
       customers: [],
@@ -181,6 +176,28 @@ export default {
       part: {
         material: {},
         stock: {},
+        images: [
+          {
+            url:
+              'https://sourcehorizon.com/wp-content/uploads/2018/11/BW-IMGP6447.jpg',
+          },
+          {
+            url:
+              'https://im01.itaiwantrade.com/9beab079-811b-4dc8-9a87-bcca807786fe/CNC-Machined-Part.jpg',
+          },
+          {
+            url:
+              'https://base.imgix.net/files/base/ebm/machinedesign/image/2019/04/machinedesign_18370_1_cnc_machined_parts.png',
+          },
+          {
+            url:
+              'http://www.conexstainless.com/backend/productImage/brass-cnc-machined-parts--screw-machine-components-02.jpg',
+          },
+          {
+            url:
+              'https://www.ejbasler.com/wp-content/uploads/2020/09/Oxygen-Sensor-Dome-Mill-Turn1.jpg',
+          },
+        ],
       },
       originalPart: {
         material: {},
@@ -234,8 +251,8 @@ export default {
       await this.$axios
         .get(`/part/${this.$route.params.id}`)
         .then(({ data }) => {
-          this.part = Object.assign({}, data)
-          this.originalPart = Object.assign({}, data)
+          this.part = Object.assign(this.part, data)
+          this.originalPart = Object.assign(this.part, data)
         })
     } else {
       this.isEdited = true
