@@ -11,6 +11,8 @@
           hide-default-footer
           disable-pagination
           :loading="loading"
+          light
+          @click:row="editRow"
         >
           <template v-slot:top>
             <v-toolbar flat>
@@ -25,14 +27,14 @@
                 class="mr-3"
                 :clearable="true"
               />
-              <v-dialog v-model="editDialog" persistent max-width="600px">
+              <v-dialog v-model="editDialog" persistent max-width="600px" light>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn color="primary" dark v-bind="attrs" v-on="on">
                     New Customer
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-card-title>
+                  <v-card-title style="background-color: #4ab54a">
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
                   <v-card-text>
@@ -142,6 +144,7 @@ export default {
   },
   data() {
     return {
+      click: false,
       loading: true,
       customers: [],
       search: null,
@@ -174,6 +177,7 @@ export default {
           value: 'actions',
           sortable: false,
           filterable: false,
+          align: 'end',
         },
       ],
     }
@@ -252,6 +256,16 @@ export default {
       const query = encodeURIComponent(`${item.name} ${item.address}`)
       const url = `https://www.google.com/maps/search/?api=1&query=${query}`
       window.open(url, '_blank')
+    },
+    editRow(e) {
+      if (!this.click) {
+        this.click = true
+        setTimeout(() => {
+          this.click = false
+        }, 500)
+        return
+      }
+      this.editItem(e)
     },
   },
 }
