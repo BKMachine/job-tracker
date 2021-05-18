@@ -37,6 +37,7 @@
                         v-model="part.name"
                         label="Name"
                         :rules="rules.req"
+                        autocomplete="false"
                       />
                     </v-col>
                     <v-col cols="2">
