@@ -93,8 +93,8 @@ export default {
           if (data.jobs.length) {
             this.page++
             this.jobs.push(...data.jobs)
-            if (this.jobs.length === data.total) return $state.complete()
             $state.loaded()
+            if (this.jobs.length === data.total) $state.complete()
           } else {
             $state.complete()
           }
@@ -115,7 +115,7 @@ export default {
         })
       } catch (e) {
         console.error(e)
-        this.$toasted.error('Unable to print DYMO Label', {
+        this.$toasted.error('Error connecting to the DYMO printer', {
           theme: 'bubble',
           position: 'bottom-right',
           duration: 2000,

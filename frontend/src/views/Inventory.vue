@@ -210,8 +210,8 @@ export default {
           if (data.parts.length) {
             this.page++
             this.parts.push(...data.parts)
-            if (this.parts.length === data.total) return $state.complete()
             $state.loaded()
+            if (this.parts.length === data.total) $state.complete()
           } else {
             $state.complete()
           }
