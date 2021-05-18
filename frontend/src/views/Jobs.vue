@@ -79,9 +79,10 @@ export default {
           },
         })
         .then(({ data }) => {
-          if (data.length) {
+          if (data.jobs.length) {
             this.page++
-            this.jobs.push(...data)
+            this.jobs.push(...data.jobs)
+            if (this.jobs.length === data.total) return $state.complete()
             $state.loaded()
           } else {
             $state.complete()

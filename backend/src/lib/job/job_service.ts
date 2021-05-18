@@ -30,10 +30,15 @@ async function getJobs(limit = 100, page = 1): Promise<JobDoc[]> {
     })
 }
 
+async function jobsCount(): Promise<number> {
+  return Job.countDocuments()
+}
+
 export default {
   listOpenJobs,
   getNextJobNumber,
   getJob,
   create,
   getJobs,
+  jobsCount,
 }

@@ -43,15 +43,15 @@ router.post('/jobs', async (req, res, next) => {
 })
 
 router.get('/jobs', async (req, res, next) => {
-  console.log(req.query)
   const { limit, page } = req.query
   const limitNum = parseInt(limit as string)
   const pageNum = parseInt(page as string)
   const l = Number.isNaN(limitNum) ? undefined : limitNum
   const p = Number.isNaN(pageNum) ? undefined : pageNum
   try {
+    const total = await JobService.jobsCount()
     const jobs = await JobService.getJobs(l, p)
-    res.status(200).json(jobs)
+    res.status(200).json({ total, jobs })
   } catch (e) {
     next(e)
   }
