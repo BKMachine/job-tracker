@@ -4,9 +4,15 @@ import PartService from '../../lib/part'
 const router = express.Router()
 
 router.get('/parts', async (req, res, next) => {
+  const { limit, page } = req.query
+  const limitNum = parseInt(limit as string)
+  const pageNum = parseInt(page as string)
+  const l = Number.isNaN(limitNum) ? undefined : limitNum
+  const p = Number.isNaN(pageNum) ? undefined : pageNum
   try {
-    const parts = await PartService.listParts()
-    res.status(200).json(parts)
+    const total = await PartService.partsCount()
+    const parts = await PartService.listParts(l, p)
+    res.status(200).json({ total, parts })
   } catch (e) {
     next(e)
   }

@@ -5,7 +5,9 @@
         <v-container class="mb-4">
           <v-row>
             <v-spacer />
-            <v-btn>Add Filter</v-btn>
+            <v-btn>
+              <v-icon>mdi-filter-plus-outline</v-icon>
+            </v-btn>
           </v-row>
         </v-container>
         <v-data-table
@@ -21,7 +23,7 @@
         >
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>Parts</v-toolbar-title>
+              <v-toolbar-title>Inventory</v-toolbar-title>
               <v-spacer />
               <v-text-field
                 v-model="search"
@@ -126,12 +128,18 @@
         </v-data-table>
       </v-col>
     </v-row>
+    <infinite-loading :identifier="infiniteId" @infinite="infiniteHandler" />
   </v-container>
 </template>
 
 <script>
+import InfiniteLoading from 'vue-infinite-loading'
+
 export default {
   name: 'Inventory',
+  components: {
+    InfiniteLoading,
+  },
   data() {
     return {
       loading: true,
@@ -141,6 +149,8 @@ export default {
       editedItem: {},
       editDialog: false,
       dialogDelete: false,
+      page: 1,
+      infiniteId: 0,
       headers: [
         {
           text: 'Name',
@@ -180,12 +190,38 @@ export default {
     },
   },
   mounted() {
-    this.$axios.get('/parts').then(({ data }) => {
+    /*this.$axios.get('/parts').then(({ data }) => {
       this.parts = data
       this.loading = false
-    })
+    })*/
   },
   methods: {
+    infiniteHandler($state) {
+      this.$axios
+        .get('/parts', {
+          params: {
+            limit: 50,
+            page: this.page,
+            search: this.search,
+          },
+        })
+        .then(({ data }) => {
+          this.loading = false
+          if (data.parts.length) {
+            this.page++
+            this.parts.push(...data.parts)
+            if (this.parts.length === data.total) return $state.complete()
+            $state.loaded()
+          } else {
+            $state.complete()
+          }
+        })
+    },
+    changeType() {
+      this.page = 1
+      this.parts = []
+      this.infiniteId++
+    },
     saveItem() {
       if (this.editedIndex > -1) {
         this.$axios
