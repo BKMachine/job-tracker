@@ -7,6 +7,10 @@
           <v-card>
             <v-card-title>
               {{ job.id }}
+              <v-spacer />
+              <v-btn @click="printLabel(job)">
+                <v-icon>mdi-label-outline</v-icon>
+              </v-btn>
             </v-card-title>
           </v-card>
         </div>
@@ -46,7 +50,14 @@
 </template>
 
 <script>
+import dymoXML from '@/dymoXML'
+import Dymo from 'dymojs'
 import InfiniteLoading from 'vue-infinite-loading'
+
+const dymo = new Dymo({
+  hostname: process.env.VUE_APP_DYMO_HOSTNAME,
+  port: process.env.VUE_APP_DYMO_PORT,
+})
 
 export default {
   name: 'Jobs',
@@ -93,6 +104,23 @@ export default {
       this.page = 1
       this.jobs = []
       this.infiniteId++
+    },
+    async printLabel(job) {
+      try {
+        await dymo.print('DYMO LabelWriter 450', dymoXML(job))
+        this.$toasted.success('Label Printed', {
+          theme: 'bubble',
+          position: 'bottom-right',
+          duration: 2000,
+        })
+      } catch (e) {
+        console.error(e)
+        this.$toasted.error('Unable to print DYMO Label', {
+          theme: 'bubble',
+          position: 'bottom-right',
+          duration: 2000,
+        })
+      }
     },
   },
 }
