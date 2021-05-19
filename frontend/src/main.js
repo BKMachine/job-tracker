@@ -17,7 +17,11 @@ Vue.use(VueFormulate, {
   plugins: [s3Uploader],
 })
 
-Vue.use(Toasted)
+Vue.use(Toasted, {
+  theme: 'bubble',
+  position: 'bottom-right',
+  duration: 2000,
+})
 
 new Vue({
   store,

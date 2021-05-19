@@ -25,52 +25,64 @@
                 single-line
                 hide-details
                 class="mr-3"
-                :clearable="true"
+                clearable
               />
               <v-dialog v-model="editDialog" persistent max-width="600px" light>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                  <v-btn color="primary" v-bind="attrs" v-on="on">
                     New Customer
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-card-title style="background-color: #4ab54a">
+                  <v-card-title style="background-color: #5ddb5d">
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
                   <v-card-text>
                     <v-container>
-                      <v-row>
-                        <v-col>
-                          <v-text-field
-                            v-model="editedItem.name"
-                            label="Name"
-                            required
-                            :autofocus="editedIndex === -1"
-                          />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
-                          <v-text-field
-                            v-model="editedItem.address"
-                            label="Address"
-                          />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="6">
-                          <v-text-field
-                            v-model="editedItem.contact"
-                            label="Contact"
-                          />
-                        </v-col>
-                        <v-col cols="6">
-                          <VuePhoneNumberInput
-                            v-model="editedItem.phone"
-                            :no-country-selector="true"
-                          />
-                        </v-col>
-                      </v-row>
+                      <v-form ref="form" v-model="valid">
+                        <v-row>
+                          <v-col>
+                            <v-text-field
+                              v-model="editedItem.name"
+                              label="Name"
+                              :autofocus="editedIndex === -1"
+                              :rules="[uniqueName, required]"
+                              autocomplete="false"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col>
+                            <v-text-field
+                              v-model="editedItem.address"
+                              label="Address"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="6">
+                            <v-text-field
+                              v-model="editedItem.contact"
+                              label="Contact"
+                            />
+                          </v-col>
+                          <v-col cols="6">
+                            <VuePhoneNumberInput
+                              v-model="editedItem.phone"
+                              :no-country-selector="true"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                              v-model="editedItem.email"
+                              label="Email"
+                              :rules="[email]"
+                            />
+                          </v-col>
+                        </v-row>
+                      </v-form>
                     </v-container>
                   </v-card-text>
                   <v-card-actions>
@@ -78,15 +90,23 @@
                       Cancel
                     </v-btn>
                     <v-spacer />
-                    <v-btn color="blue darken-1" text @click="saveItem">
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      :disabled="!valid"
+                      @click="saveItem"
+                    >
                       {{ actionTitle }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-dialog v-model="dialogDelete" max-width="500px">
+              <v-dialog v-model="deleteDialog" max-width="500px" light>
                 <v-card>
-                  <v-card-title class="headline">
+                  <v-card-title
+                    class="headline"
+                    style="background-color: #ff2a55"
+                  >
                     {{ editedItem.name }}
                   </v-card-title>
                   <v-card-text>
@@ -113,14 +133,6 @@
           <template v-slot:item.actions="{ item }">
             <v-row class="mr-0">
               <v-spacer></v-spacer>
-              <v-icon
-                v-if="item.address"
-                small
-                class="mr-2"
-                @click="openMap(item)"
-              >
-                mdi-map-marker
-              </v-icon>
               <v-icon small class="mr-2" @click="editItem(item)">
                 mdi-pencil
               </v-icon>
@@ -150,8 +162,10 @@ export default {
       search: null,
       editedIndex: -1,
       editedItem: {},
+      editedName: null,
       editDialog: false,
-      dialogDelete: false,
+      deleteDialog: false,
+      valid: false,
       headers: [
         {
           text: 'Name',
@@ -162,11 +176,6 @@ export default {
           value: 'address',
           filterable: false,
         },
-        /*{
-          text: 'Contact',
-          value: 'contact',
-          filterable: false,
-        },*/
         {
           text: 'Phone',
           value: 'phone',
@@ -184,7 +193,9 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Customer' : 'Edit Customer'
+      return this.editedIndex === -1
+        ? 'New Customer'
+        : `Edit - ${this.editedName}`
     },
     actionTitle() {
       return this.editedIndex === -1 ? 'Save' : 'Edit'
@@ -198,15 +209,19 @@ export default {
   },
   methods: {
     saveItem() {
+      this.$refs.form.validate()
+      if (!this.valid) return
       if (this.editedIndex > -1) {
         this.$axios
           .put('/customers', this.editedItem)
           .then(({ data }) => {
             Object.assign(this.customers[this.editedIndex], data)
             this.close()
+            this.$toasted.success('Customer updated successfully')
           })
           .catch((err) => {
             console.error(err)
+            this.$toasted.error('Error editing the customer')
           })
       } else {
         this.$axios
@@ -214,21 +229,24 @@ export default {
           .then(({ data }) => {
             this.customers.push(data)
             this.close()
+            this.$toasted.success('Customer added successfully')
           })
           .catch((err) => {
             console.error(err)
+            this.$toasted.error('Error adding the customer')
           })
       }
     },
     editItem(item) {
       this.editedIndex = this.customers.indexOf(item)
       this.editedItem = Object.assign({}, item)
+      this.editedName = item.name
       this.editDialog = true
     },
     deleteItem(item) {
       this.editedIndex = this.customers.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
+      this.deleteDialog = true
     },
     deleteItemConfirm() {
       this.$axios
@@ -236,6 +254,11 @@ export default {
         .then(() => {
           this.customers.splice(this.editedIndex, 1)
           this.closeDelete()
+          this.$toasted.success('Customer deleted successfully')
+        })
+        .catch((e) => {
+          console.error(e)
+          this.$toasted.error('Error deleting the customer')
         })
     },
     close() {
@@ -243,13 +266,16 @@ export default {
       this.$nextTick(() => {
         this.editedItem = {}
         this.editedIndex = -1
+        this.editedName = null
+        this.$refs.form.resetValidation()
       })
     },
     closeDelete() {
-      this.dialogDelete = false
+      this.deleteDialog = false
       this.$nextTick(() => {
         this.editedItem = {}
         this.editedIndex = -1
+        this.editedName = null
       })
     },
     openMap(item) {
@@ -266,6 +292,29 @@ export default {
         return
       }
       this.editItem(e)
+    },
+    uniqueName(val) {
+      if (!val) return true
+      if (this.editedName) {
+        if (
+          this.editedName.toLowerCase() === this.editedItem.name.toLowerCase()
+        )
+          return true
+      }
+      const exists = this.customers.findIndex(
+        (x) => x.name.toLowerCase() === val.toLowerCase(),
+      )
+      return exists === -1 || 'Customer name already exists'
+    },
+    required(val) {
+      return !!val || 'Required'
+    },
+    email(val) {
+      return (
+        !val ||
+        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) ||
+        'Invalid Email'
+      )
     },
   },
 }

@@ -16,6 +16,7 @@ async function seed() {
     address: '111 Main Street, Some Town, USA',
     contact: 'Amy',
     phone: '(555) 555-1111',
+    email: 'cust1@customers.com',
   }).save()
 
   await new Customer({
@@ -23,6 +24,7 @@ async function seed() {
     address: '222 Main Street, Some Town, USA',
     contact: 'George',
     phone: '(555) 555-2222',
+    email: 'cust2@customers.com',
   }).save()
 
   await new Customer({
@@ -30,6 +32,7 @@ async function seed() {
     address: '333 Main Street, Some Town, USA',
     contact: 'Dan',
     phone: '(555) 555-3333',
+    email: 'cust3@customers.com',
   }).save()
 
   await new Customer({
@@ -37,6 +40,7 @@ async function seed() {
     address: '444 Main Street, Some Town, USA',
     contact: 'Claire',
     phone: '(555) 555-4444',
+    email: 'cust4@customers.com',
   }).save()
 
   await new Customer({
@@ -44,6 +48,7 @@ async function seed() {
     address: '555 Main Street, Some Town, USA',
     contact: 'Charlie',
     phone: '(555) 555-5555',
+    email: 'cust5@customers.com',
   }).save()
 
   await new Part({

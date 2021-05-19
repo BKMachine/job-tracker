@@ -108,18 +108,10 @@ export default {
     async printLabel(job) {
       try {
         await dymo.print('DYMO LabelWriter 450', dymoXML(job))
-        this.$toasted.success('Label Printed', {
-          theme: 'bubble',
-          position: 'bottom-right',
-          duration: 2000,
-        })
+        this.$toasted.success('Label Printed')
       } catch (e) {
         console.error(e)
-        this.$toasted.error('Error connecting to the DYMO printer', {
-          theme: 'bubble',
-          position: 'bottom-right',
-          duration: 2000,
-        })
+        this.$toasted.error('Error connecting to the DYMO printer')
       }
     },
   },

@@ -5,6 +5,7 @@ const schema = new Schema({
   address: String,
   contact: String,
   phone: String,
+  email: String,
 })
 
 export interface CustomerDoc extends Document {
@@ -12,6 +13,7 @@ export interface CustomerDoc extends Document {
   address?: string
   contact?: string
   phone?: string
+  email?: string
 }
 
 export default model<CustomerDoc>('customers', schema)
