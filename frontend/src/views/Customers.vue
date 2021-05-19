@@ -105,24 +105,24 @@
                 <v-card>
                   <v-card-title
                     class="headline"
-                    style="background-color: #ff2a55"
+                    style="background-color: #ff819b"
                   >
                     {{ editedItem.name }}
                   </v-card-title>
-                  <v-card-text>
+                  <v-card-text class="body-1 mt-6 pb-0">
                     Are you sure you want to delete this customer?
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer />
                     <v-btn color="grey darken-1" text @click="closeDelete">
-                      Cancel
+                      No
                     </v-btn>
                     <v-btn
                       color="blue darken-1"
                       text
                       @click="deleteItemConfirm"
                     >
-                      OK
+                      Yes
                     </v-btn>
                     <v-spacer />
                   </v-card-actions>
@@ -138,6 +138,18 @@
               </v-icon>
               <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
             </v-row>
+          </template>
+          <template v-slot:item.address="{ item }">
+            <span>
+              <img
+                v-if="item.address"
+                class="pin mr-1"
+                src="@/assets/pin.png"
+                alt="test"
+                @click="openMap(item)"
+              />
+            </span>
+            {{ item.address }}
           </template>
         </v-data-table>
       </v-col>
@@ -217,11 +229,11 @@ export default {
           .then(({ data }) => {
             Object.assign(this.customers[this.editedIndex], data)
             this.close()
-            this.$toasted.success('Customer updated successfully')
+            this.$toasted.success(`${this.editedItem.name} updated`)
           })
           .catch((err) => {
             console.error(err)
-            this.$toasted.error('Error editing the customer')
+            this.$toasted.error(`Error editing ${this.editedItem.name}`)
           })
       } else {
         this.$axios
@@ -229,11 +241,11 @@ export default {
           .then(({ data }) => {
             this.customers.push(data)
             this.close()
-            this.$toasted.success('Customer added successfully')
+            this.$toasted.success(`${this.editedItem.name} added`)
           })
           .catch((err) => {
             console.error(err)
-            this.$toasted.error('Error adding the customer')
+            this.$toasted.error(`Error adding ${this.editedItem.name}`)
           })
       }
     },
@@ -254,11 +266,11 @@ export default {
         .then(() => {
           this.customers.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$toasted.success('Customer deleted successfully')
+          this.$toasted.success(`${this.editedItem.name} deleted`)
         })
         .catch((e) => {
           console.error(e)
-          this.$toasted.error('Error deleting the customer')
+          this.$toasted.error(`Error deleting the ${this.editedItem.name}`)
         })
     },
     close() {
@@ -323,5 +335,12 @@ export default {
 <style>
 tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.03);
+}
+.pin {
+  cursor: pointer;
+  width: 10px;
+  height: 16px;
+  position: relative;
+  top: 2px;
 }
 </style>
