@@ -3,185 +3,189 @@
     <v-progress-linear v-if="loading" indeterminate />
     <v-container v-else class="mt-6">
       <v-row justify="center">
-        <v-col cols="10">
-          <v-row>
-            <v-card light>
-              <v-card-title :class="{ editing: isEdited }">
-                <div class="text-h4">{{ partName }}</div>
-                <v-divider vertical class="mx-4 mt-0 mb-0"></v-divider>
-                <v-icon class="mr-1">mdi-history</v-icon>
-                <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
-                <div class="text-body-1">
-                  In Stock:
-                  <span class="font-weight-bold">
-                    {{ part.stock.quantity || 0 }}
-                  </span>
-                </div>
-                <div class="ml-4 text-body-1">
-                  Location:
-                  <span class="font-weight-bold">
-                    {{ part.stock.location || 'None' }}
-                  </span>
-                </div>
-                <v-spacer />
-                <div v-if="isEdited">
-                  <v-btn class="red lighten-2 mr-2" @click="cancel"
-                    >Cancel</v-btn
-                  >
-                  <v-btn class="green lighten-2" @click="save">Save</v-btn>
-                </div>
-              </v-card-title>
-              <v-card-text class="mt-3">
-                <v-form v-model="valid" @change="isEdited === true">
-                  <v-container>
-                    <v-row class="mt-0">
-                      <v-col cols="7">
-                        <v-row>
-                          <v-col cols="8">
-                            <v-text-field
-                              v-model="part.name"
-                              label="Name"
-                              :rules="rules.req"
-                              autocomplete="false"
-                            />
-                          </v-col>
-                          <v-col cols="4">
-                            <v-text-field v-model="part.revision" label="Rev" />
-                          </v-col>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12">
-                            <v-select
-                              v-model="part.customer"
-                              :items="customers"
-                              label="Customer"
-                              :rules="rules.req"
-                            />
-                          </v-col>
-                        </v-row>
-                      </v-col>
-                      <v-col cols="5">
-                        <img
-                          src="https://sourcehorizon.com/wp-content/uploads/2018/11/BW-IMGP6447.jpg"
-                          alt=""
-                          style="width: 100%"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="part.description"
-                          label="Description"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-textarea v-model="part.notes" label="Notes" />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-row>
-          <v-row>
-            <v-expansion-panels light>
-              <v-expansion-panel class="mt-3">
-                <v-expansion-panel-header> Material </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-row class="text-h6">
-                    <v-col cols="3"> Material </v-col>
-                    <v-col cols="3" style="text-align: center">
-                      <v-radio-group
-                        v-model="part.material.shape"
-                        row
-                        class="pa-0 ma-0 mt-1"
-                      >
-                        <v-radio label="Square" value="square" />
-                        <v-radio label="Round" value="round" />
-                      </v-radio-group>
-                    </v-col>
-                    <v-col cols="3" style="text-align: center">
-                      <v-radio-group row class="pa-0 ma-0 mt-1">
-                        <v-radio label="Solid" value="solid" />
-                        <v-radio label="Tubing" value="tubing" />
-                      </v-radio-group>
-                    </v-col>
-                    <v-col cols="3" style="text-align: center">
-                      <v-radio-group
-                        v-model="part.material.workpiece"
-                        :disabled="part.material.shape === 'square'"
-                        row
-                        class="pa-0 ma-0 mt-1"
-                      >
-                        <v-radio label="Bars" value="bars" />
-                        <v-radio label="Blanks" value="blanks" />
-                      </v-radio-group>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12">
+        <v-col cols="9">
+          <v-card light>
+            <v-card-title :class="{ editing: isEdited }">
+              <div class="text-h4">{{ partName }}</div>
+              <v-divider vertical class="mx-4 mt-0 mb-0"></v-divider>
+              <v-icon class="mr-1">mdi-history</v-icon>
+              <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
+              <div class="text-body-1">
+                In Stock:
+                <span class="font-weight-bold">
+                  {{ part.stock.quantity || 0 }}
+                </span>
+              </div>
+              <div class="ml-4 text-body-1">
+                Location:
+                <span class="font-weight-bold">
+                  {{ part.stock.location || 'None' }}
+                </span>
+              </div>
+              <v-spacer />
+              <div v-if="isEdited">
+                <v-btn class="red lighten-2 mr-2" @click="cancel">Cancel</v-btn>
+                <v-btn class="green lighten-2" @click="save">Save</v-btn>
+              </div>
+            </v-card-title>
+            <v-card-text class="mt-3">
+              <v-form v-model="valid" @change="isEdited === true">
+                <v-container>
+                  <v-row class="mt-0">
+                    <v-col cols="8">
                       <v-row>
-                        <v-col cols="6">
+                        <v-col cols="9">
                           <v-text-field
-                            v-model="part.material.materialType"
-                            label="Type"
+                            v-model="part.name"
+                            label="Name"
                             :rules="rules.req"
+                            autocomplete="false"
                           />
                         </v-col>
-                        <v-col v-if="part.material.shape === 'round'" cols="2">
-                          <v-text-field
-                            v-model="part.material.diameter"
-                            label="Diameter"
-                            :rules="rules.number"
-                          />
+                        <v-col cols="3">
+                          <v-text-field v-model="part.revision" label="Rev" />
                         </v-col>
-                        <v-col v-else cols="2">
-                          <v-text-field
-                            v-model="part.material.height"
-                            label="Height"
-                            :rules="rules.number"
-                          />
-                          X
-                          <v-text-field
-                            v-model="part.material.width"
-                            label="Width"
-                            :rules="rules.number"
-                          />
-                        </v-col>
-                        <v-col cols="2">
-                          <v-text-field
-                            v-model="part.material.partLength"
-                            label="Finish Length"
-                            :rules="rules.number"
-                          />
-                        </v-col>
-                        <v-col cols="2">
-                          <v-text-field
-                            v-model="part.material.cutLength"
-                            label="Saw Length"
-                            :rules="rules.number"
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-select
+                            v-model="part.customer"
+                            :items="customers"
+                            label="Customer"
+                            :rules="rules.req"
                           />
                         </v-col>
                       </v-row>
                     </v-col>
-                  </v-row>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-              <v-expansion-panel class="mt-3">
-                <v-expansion-panel-header> Images </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-row>
-                    <v-col>
-                      <PartImages :images="part.images" />
+                    <v-col cols="4">
+                      <img
+                        v-if="!part.image"
+                        src="@/assets/image_icon.png"
+                        alt=""
+                        style="width: 100%"
+                      />
+                      <img
+                        v-else
+                        :src="part.image"
+                        alt=""
+                        style="width: 100%"
+                      />
                     </v-col>
                   </v-row>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="part.description"
+                        label="Description"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-textarea v-model="part.notes" label="Notes" />
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-form>
+            </v-card-text>
+          </v-card>
+          <v-expansion-panels light>
+            <v-expansion-panel class="mt-3">
+              <v-expansion-panel-header class="body-1">
+                Material
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-row>
+                  <v-col cols="3" style="text-align: center">
+                    <v-radio-group
+                      v-model="part.material.shape"
+                      row
+                      class="pa-0 ma-0 mt-1"
+                    >
+                      <v-radio label="Square" value="square" />
+                      <v-radio label="Round" value="round" />
+                    </v-radio-group>
+                  </v-col>
+                  <v-col cols="3" style="text-align: center">
+                    <v-radio-group row class="pa-0 ma-0 mt-1">
+                      <v-radio label="Solid" value="solid" />
+                      <v-radio label="Tubing" value="tubing" />
+                    </v-radio-group>
+                  </v-col>
+                  <v-col cols="3" style="text-align: center">
+                    <v-radio-group
+                      v-model="part.material.workpiece"
+                      :disabled="part.material.shape === 'square'"
+                      row
+                      class="pa-0 ma-0 mt-1"
+                    >
+                      <v-radio label="Bars" value="bars" />
+                      <v-radio label="Blanks" value="blanks" />
+                    </v-radio-group>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-row>
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="part.material.materialType"
+                          label="Type"
+                          :rules="rules.req"
+                        />
+                      </v-col>
+                      <v-col v-if="part.material.shape === 'round'" cols="2">
+                        <v-text-field
+                          v-model="part.material.diameter"
+                          label="Diameter"
+                          :rules="rules.number"
+                        />
+                      </v-col>
+                      <v-col v-else cols="2">
+                        <v-text-field
+                          v-model="part.material.height"
+                          label="Height"
+                          :rules="rules.number"
+                        />
+                        X
+                        <v-text-field
+                          v-model="part.material.width"
+                          label="Width"
+                          :rules="rules.number"
+                        />
+                      </v-col>
+                      <v-col cols="2">
+                        <v-text-field
+                          v-model="part.material.partLength"
+                          label="Finish Length"
+                          :rules="rules.number"
+                        />
+                      </v-col>
+                      <v-col cols="2">
+                        <v-text-field
+                          v-model="part.material.cutLength"
+                          label="Saw Length"
+                          :rules="rules.number"
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel class="mt-3">
+              <v-expansion-panel-header class="body-1">
+                Images
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-row>
+                  <v-col>
+                    <PartImages :images="part.images" />
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-col>
       </v-row>
     </v-container>
@@ -206,6 +210,8 @@ export default {
       part: {
         material: {},
         stock: {},
+        /*image:
+          'https://sourcehorizon.com/wp-content/uploads/2018/11/BW-IMGP6447.jpg',*/
         images: [
           {
             url:
@@ -325,8 +331,8 @@ export default {
 <style scoped>
 .v-card__title {
   background-color: #c58cff;
-  padding-top: 0.75em;
-  padding-bottom: 0.75em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 .v-card__title.editing {
   /*background-color: #f78cff;*/

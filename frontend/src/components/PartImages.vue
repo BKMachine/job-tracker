@@ -40,7 +40,7 @@
 import PartImageCarousel from '@/components/PartImageCarousel'
 
 export default {
-  name: 'Part Images',
+  name: 'PartImages',
   props: ['images'],
   components: { PartImageCarousel },
   data() {
