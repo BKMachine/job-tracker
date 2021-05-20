@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" class="mt-10">
-      <v-col cols="10">
+      <v-col cols="9">
         <v-data-table
           :headers="headers"
           :items="customers"
@@ -79,6 +79,19 @@
                               v-model="editedItem.email"
                               label="Email"
                               :rules="[email]"
+                              append-icon="mdi-email-outline"
+                              @click:append="sendEmail"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-row>
+                          <v-col cols="12">
+                            <v-text-field
+                              v-model="editedItem.website"
+                              label="Website"
+                              :rules="[url]"
+                              append-icon="mdi-open-in-new"
+                              @click:append="openSite"
                             />
                           </v-col>
                         </v-row>
@@ -327,6 +340,23 @@ export default {
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) ||
         'Invalid Email'
       )
+    },
+    url(val) {
+      return (
+        !val ||
+        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
+          val,
+        ) ||
+        'Invalid URL'
+      )
+    },
+    openSite() {
+      if (!this.editedItem.website) return
+      window.open(this.editedItem.website, '_blank')
+    },
+    sendEmail() {
+      if (!this.editedItem.email) return
+      window.open(`mailto:${this.editedItem.email}`)
     },
   },
 }
