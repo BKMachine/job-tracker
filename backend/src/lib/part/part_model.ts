@@ -6,6 +6,13 @@ const schema = new Schema({
   description: String,
   notes: String,
   customer: String,
+  thumbnail: String,
+  images: [
+    {
+      url: String,
+      name: String,
+    },
+  ],
   stock: {
     quantity: Number,
     location: String,
@@ -28,6 +35,8 @@ export interface PartDoc extends Document {
   description: string
   notes: string
   customer: string
+  thumbnail: string
+  images: [{ url: string; name: string }]
   stock: {
     quantity: number
     location: string

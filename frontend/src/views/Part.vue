@@ -58,17 +58,9 @@
                       </v-row>
                     </v-col>
                     <v-col cols="4">
-                      <img
-                        v-if="!part.image"
-                        src="@/assets/image_icon.png"
-                        alt=""
-                        style="width: 100%"
-                      />
-                      <img
-                        v-else
-                        :src="part.image"
-                        alt=""
-                        style="width: 100%"
+                      <PartThumbnail
+                        :thumbnail="part.thumbnail"
+                        @thumbUpload="saveThumb"
                       />
                     </v-col>
                   </v-row>
@@ -195,11 +187,13 @@
 <script>
 // import _ from 'lodash'
 import PartImages from '@/components/PartImages'
+import PartThumbnail from '@/components/PartThumbnail'
 
 export default {
   name: 'Part',
   components: {
     PartImages,
+    PartThumbnail,
   },
   data() {
     return {
@@ -210,8 +204,6 @@ export default {
       part: {
         material: {},
         stock: {},
-        /*image:
-          'https://sourcehorizon.com/wp-content/uploads/2018/11/BW-IMGP6447.jpg',*/
         images: [
           {
             url:
@@ -323,6 +315,11 @@ export default {
     },
     required(val) {
       return (val || '').length > 0 || 'This field is required'
+    },
+    saveThumb(url) {
+      this.part.thumbnail = url
+      this.save()
+      this.$forceUpdate()
     },
   },
 }

@@ -1,4 +1,4 @@
-async function uploadToS3(file, progress, error, options) {
+export async function uploadToS3(file, progress, error, options) {
   const matches = file.name.match(/\.([a-zA-Z0-9]+)$/)
   const extension = matches ? matches[1] : 'txt'
   progress(5)
