@@ -74,11 +74,6 @@ export default {
       jobs: [],
     }
   },
-  mounted() {
-    // this.$axios.get('/jobs').then(({ data }) => {
-    // this.jobs = data
-    // })
-  },
   methods: {
     infiniteHandler($state) {
       this.$axios
@@ -107,8 +102,17 @@ export default {
     },
     async printLabel(job) {
       try {
-        await dymo.print('DYMO LabelWriter 450', dymoXML(job))
-        this.$toasted.success('Label Printed')
+        await dymo
+          .print('DYMO LabelWriter 450 Turbo', dymoXML(job))
+          .then((res) => {
+            const json = JSON.parse(res)
+            if (json.message === 'An error has occurred.') {
+              console.error(json)
+              this.$toasted.error('Error connecting to the DYMO printer')
+            } else {
+              this.$toasted.success('Label Printed')
+            }
+          })
       } catch (e) {
         console.error(e)
         this.$toasted.error('Error connecting to the DYMO printer')

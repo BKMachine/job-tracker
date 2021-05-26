@@ -23,6 +23,7 @@ async function create(data: unknown): Promise<JobDoc> {
 
 async function getJobs(limit = 100, page = 1): Promise<JobDoc[]> {
   return Job.find()
+    .populate('part')
     .limit(limit)
     .skip(limit * (page - 1))
     .sort({
