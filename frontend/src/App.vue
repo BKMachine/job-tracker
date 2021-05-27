@@ -9,21 +9,15 @@
 
 <script>
 import NavDrawer from '@/components/NavDrawer'
+import scanner from './scanner'
 
 export default {
   name: 'App',
   components: { NavDrawer },
   mounted() {
-    navigator.usb.getDevices().then((devices) => {
-      console.log('Total devices: ' + devices.length)
-      devices.forEach((device) => {
-        console.log(
-          'Product name: ' +
-            device.productName +
-            ', serial number ' +
-            device.serialNumber,
-        )
-      })
+    scanner()
+    window.addEventListener('keydown', (event) => {
+      console.log(event)
     })
   },
 }

@@ -1,1 +1,1 @@
-export const appUrl = process.env.APP_URL || 'http://localhost:8080'
+export const appUrl = process.env.APP_URL || 'https://localhost:8080'
