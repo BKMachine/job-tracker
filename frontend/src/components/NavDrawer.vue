@@ -21,7 +21,7 @@
         :to="item.route"
       >
         <v-list-item-icon>
-          <v-icon>{{ item.icon }}</v-icon>
+          <v-icon :color="item.color">{{ item.icon }}</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
@@ -50,17 +50,29 @@ export default {
   data() {
     return {
       items: [
-        { title: 'Dashboard', icon: 'mdi-view-dashboard', route: '/' },
-        { title: 'Jobs', icon: 'mdi-barcode', route: '/jobs' },
+        {
+          title: 'Dashboard',
+          icon: 'mdi-view-dashboard',
+          route: '/',
+          color: '#e58c2f',
+        },
+        {
+          title: 'Jobs',
+          icon: 'mdi-apache-kafka',
+          route: '/jobs',
+          color: 'blue',
+        },
         {
           title: 'Inventory',
           icon: 'mdi-format-list-bulleted',
           route: '/inventory',
+          color: '#c58cff',
         },
         {
           title: 'Customers',
           icon: 'mdi-account-multiple',
           route: '/customers',
+          color: '#5ddb5d',
         },
       ],
     }
