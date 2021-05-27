@@ -99,7 +99,7 @@
                     </v-container>
                   </v-card-text>
                   <v-card-actions>
-                    <v-btn color="gray darken-1" text @click="close">
+                    <v-btn color="gray darken-1" text @click="reset">
                       Cancel
                     </v-btn>
                     <v-spacer />
@@ -109,7 +109,7 @@
                       :disabled="!valid"
                       @click="saveItem"
                     >
-                      {{ actionTitle }}
+                      Save
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -127,7 +127,7 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn color="grey darken-1" text @click="closeDelete">
+                    <v-btn color="grey darken-1" text @click="reset">
                       No
                     </v-btn>
                     <v-btn
@@ -143,6 +143,22 @@
               </v-dialog>
             </v-toolbar>
           </template>
+          <template v-slot:item.name="{ item }">
+            <v-icon class="mr-2">mdi-open-in-new</v-icon>
+            <span class="font-weight-medium">
+              {{ item.name }}
+            </span>
+          </template>
+          <template v-slot:item.address="{ item }">
+            <img
+              v-if="item.address"
+              class="pin mr-1"
+              src="@/assets/pin.png"
+              alt="test"
+              @click="openMap(item)"
+            />
+            {{ item.address }}
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-row class="mr-0">
               <v-spacer></v-spacer>
@@ -151,18 +167,6 @@
               </v-icon>
               <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
             </v-row>
-          </template>
-          <template v-slot:item.address="{ item }">
-            <span>
-              <img
-                v-if="item.address"
-                class="pin mr-1"
-                src="@/assets/pin.png"
-                alt="test"
-                @click="openMap(item)"
-              />
-            </span>
-            {{ item.address }}
           </template>
         </v-data-table>
       </v-col>
@@ -222,9 +226,6 @@ export default {
         ? 'New Customer'
         : `Edit - ${this.editedName}`
     },
-    actionTitle() {
-      return this.editedIndex === -1 ? 'Save' : 'Edit'
-    },
   },
   mounted() {
     this.$axios.get('/customers').then(({ data }) => {
@@ -241,7 +242,7 @@ export default {
           .put('/customers', this.editedItem)
           .then(({ data }) => {
             Object.assign(this.customers[this.editedIndex], data)
-            this.close()
+            this.reset()
             this.$toasted.success(`${this.editedItem.name} updated`)
           })
           .catch((err) => {
@@ -253,7 +254,7 @@ export default {
           .post('/customers', this.editedItem)
           .then(({ data }) => {
             this.customers.push(data)
-            this.close()
+            this.reset()
             this.$toasted.success(`${this.editedItem.name} added`)
           })
           .catch((err) => {
@@ -286,21 +287,14 @@ export default {
           this.$toasted.error(`Error deleting the ${this.editedItem.name}`)
         })
     },
-    close() {
+    reset() {
       this.editDialog = false
-      this.$nextTick(() => {
-        this.editedItem = {}
-        this.editedIndex = -1
-        this.editedName = null
-        this.$refs.form.resetValidation()
-      })
-    },
-    closeDelete() {
       this.deleteDialog = false
       this.$nextTick(() => {
         this.editedItem = {}
         this.editedIndex = -1
         this.editedName = null
+        this.$refs.form.resetValidation()
       })
     },
     openMap(item) {
