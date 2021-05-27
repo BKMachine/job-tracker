@@ -4,6 +4,7 @@ import Inventory from '@/views/Inventory'
 import Job from '@/views/Job'
 import Jobs from '@/views/Jobs'
 import Part from '@/views/Part'
+import Settings from '@/views/Settings'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -24,6 +25,11 @@ const routes = [
     path: '/customers',
     name: 'customers',
     component: Customers,
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: Settings,
   },
 
   { path: '/jobs', name: 'jobs', component: Jobs },
