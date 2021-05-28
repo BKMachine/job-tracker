@@ -12,7 +12,7 @@
           disable-pagination
           :loading="loading"
           light
-          @click:row="editRow"
+          @click:row="viewRow"
         >
           <template v-slot:top>
             <v-toolbar flat>
@@ -27,7 +27,12 @@
                 class="mr-3"
                 clearable
               />
-              <v-dialog v-model="editDialog" persistent max-width="600px" light>
+              <v-dialog
+                v-model="editDialog"
+                :persistent="!viewOnly"
+                max-width="600px"
+                light
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn color="primary" v-bind="attrs" v-on="on">
                     New Customer
@@ -39,7 +44,7 @@
                   </v-card-title>
                   <v-card-text>
                     <v-container>
-                      <v-form ref="form" v-model="valid">
+                      <v-form ref="form" v-model="valid" :readonly="viewOnly">
                         <v-row>
                           <v-col>
                             <v-text-field
@@ -99,18 +104,26 @@
                     </v-container>
                   </v-card-text>
                   <v-card-actions>
-                    <v-btn color="gray darken-1" text @click="reset">
-                      Cancel
-                    </v-btn>
-                    <v-spacer />
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      :disabled="!valid"
-                      @click="saveItem"
-                    >
-                      Save
-                    </v-btn>
+                    <template v-if="!viewOnly">
+                      <v-btn color="gray darken-1" text @click="reset">
+                        Cancel
+                      </v-btn>
+                      <v-spacer />
+                      <v-btn
+                        color="blue darken-1"
+                        text
+                        :disabled="!valid"
+                        @click="saveItem"
+                      >
+                        Save
+                      </v-btn>
+                    </template>
+                    <template v-else>
+                      <v-spacer />
+                      <v-btn color="gray darken-1" text @click="reset">
+                        Close
+                      </v-btn>
+                    </template>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -144,7 +157,9 @@
             </v-toolbar>
           </template>
           <template v-slot:item.name="{ item }">
-            <v-icon class="mr-2">mdi-open-in-new</v-icon>
+            <v-icon class="mr-2" @click="viewItem(item)">
+              mdi-open-in-new
+            </v-icon>
             <span class="font-weight-medium">
               {{ item.name }}
             </span>
@@ -195,6 +210,7 @@ export default {
       editDialog: false,
       deleteDialog: false,
       valid: false,
+      viewOnly: false,
       headers: [
         {
           text: 'Name',
@@ -222,6 +238,7 @@ export default {
   },
   computed: {
     formTitle() {
+      if (this.viewOnly) return this.editedName
       return this.editedIndex === -1
         ? 'New Customer'
         : `Edit - ${this.editedName}`
@@ -263,6 +280,10 @@ export default {
           })
       }
     },
+    viewItem(item) {
+      this.viewOnly = true
+      this.editItem(item)
+    },
     editItem(item) {
       this.editedIndex = this.customers.indexOf(item)
       this.editedItem = Object.assign({}, item)
@@ -294,6 +315,7 @@ export default {
         this.editedItem = {}
         this.editedIndex = -1
         this.editedName = null
+        this.viewOnly = false
         this.$refs.form.resetValidation()
       })
     },
@@ -302,7 +324,7 @@ export default {
       const url = `https://www.google.com/maps/search/?api=1&query=${query}`
       window.open(url, '_blank')
     },
-    editRow(e) {
+    viewRow(e) {
       if (!this.click) {
         this.click = true
         setTimeout(() => {
@@ -310,7 +332,7 @@ export default {
         }, 500)
         return
       }
-      this.editItem(e)
+      this.viewItem(e)
     },
     uniqueName(val) {
       if (!val) return true
