@@ -1,9 +1,9 @@
 import Customers from '@/views/Customers'
 import Home from '@/views/Home.vue'
-import Inventory from '@/views/Inventory'
 import Job from '@/views/Job'
 import Jobs from '@/views/Jobs'
 import Part from '@/views/Part'
+import Parts from '@/views/Parts'
 import Settings from '@/views/Settings'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -17,9 +17,9 @@ const routes = [
     component: Home,
   },
   {
-    path: '/inventory',
-    name: 'inventory',
-    component: Inventory,
+    path: '/parts',
+    name: 'parts',
+    component: Parts,
   },
   {
     path: '/customers',
@@ -34,7 +34,7 @@ const routes = [
 
   { path: '/jobs', name: 'jobs', component: Jobs },
   { path: '/job/:id', name: 'job', component: Job },
-  { path: '/inventory/:id', name: 'part', component: Part },
+  { path: '/part/:id', name: 'part', component: Part },
 ]
 
 const router = new VueRouter({

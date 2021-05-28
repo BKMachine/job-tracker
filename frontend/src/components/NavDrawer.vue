@@ -63,9 +63,9 @@ export default {
           color: 'blue',
         },
         {
-          title: 'Inventory',
+          title: 'Parts',
           icon: 'mdi-format-list-bulleted',
-          route: '/inventory',
+          route: '/parts',
           color: '#c58cff',
         },
         {

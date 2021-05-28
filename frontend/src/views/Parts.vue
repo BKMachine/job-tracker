@@ -23,7 +23,7 @@
         >
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>Inventory</v-toolbar-title>
+              <v-toolbar-title>Parts</v-toolbar-title>
               <v-spacer />
               <v-text-field
                 v-model="search"
@@ -136,7 +136,7 @@
 import InfiniteLoading from 'vue-infinite-loading'
 
 export default {
-  name: 'Inventory',
+  name: 'Parts',
   components: {
     InfiniteLoading,
   },
@@ -278,7 +278,7 @@ export default {
       })
     },
     openPart(event, item) {
-      this.$router.push(`/inventory/${item.item._id}`)
+      this.$router.push(`/part/${item.item._id}`)
     },
   },
 }
