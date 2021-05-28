@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center" class="mt-10">
       <v-col cols="9">
-        <v-card light>
+        <v-card>
           <v-card-text>
             <v-btn @click="pair">Connect to Scanner</v-btn>
             <div v-if="device">

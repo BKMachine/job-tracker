@@ -11,7 +11,6 @@
           hide-default-footer
           disable-pagination
           :loading="loading"
-          light
           @click:row="viewRow"
         >
           <template v-slot:top>
@@ -31,7 +30,6 @@
                 v-model="editDialog"
                 :persistent="!viewOnly"
                 max-width="600px"
-                light
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn color="primary" v-bind="attrs" v-on="on">
@@ -127,7 +125,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-dialog v-model="deleteDialog" max-width="500px" light>
+              <v-dialog v-model="deleteDialog" max-width="500px">
                 <v-card>
                   <v-card-title
                     class="headline"

@@ -4,7 +4,7 @@
     <v-container v-else class="mt-6">
       <v-row justify="center">
         <v-col cols="9">
-          <v-card light>
+          <v-card>
             <v-card-title :class="{ editing: isEdited }">
               <div class="text-h4">{{ partName }}</div>
               <v-divider vertical class="mx-4 mt-0 mb-0"></v-divider>
@@ -81,7 +81,7 @@
               </v-form>
             </v-card-text>
           </v-card>
-          <v-expansion-panels light>
+          <v-expansion-panels>
             <v-expansion-panel class="mt-3">
               <v-expansion-panel-header class="body-1">
                 Material

@@ -12,7 +12,7 @@
       <PartImageCarousel :images="images" :index="index" />
     </v-dialog>
     <v-dialog v-model="addImages" max-width="800px">
-      <v-card light>
+      <v-card>
         <v-card-title style="background-color: #00e1ff">
           Add Files
         </v-card-title>

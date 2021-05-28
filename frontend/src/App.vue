@@ -26,3 +26,9 @@ export default {
 <style lang="scss">
 @import '../node_modules/@braid/vue-formulate/themes/snow/snow.scss';
 </style>
+
+<style>
+/*#app {
+  background-color: #121212;
+}*/
+</style>
