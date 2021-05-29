@@ -1,35 +1,36 @@
 <template>
   <v-container>
-    <v-row justify="center" class="mt-10">
+    <v-row class="mt-10" justify="center">
       <v-col cols="9">
         <v-data-table
           :headers="headers"
           :items="customers"
-          sort-by="name"
-          class="elevation-2"
+          :loading="loading"
           :search="search"
+          class="elevation-3"
+          sort-by="name"
           hide-default-footer
           disable-pagination
-          :loading="loading"
-          @click:row="viewRow"
+          @dblclick:row="dblClickRow"
         >
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>Customers</v-toolbar-title>
+              <v-toolbar-title> Customers </v-toolbar-title>
               <v-spacer />
               <v-text-field
                 v-model="search"
-                prepend-inner-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
                 class="mr-3"
+                label="Search"
+                prepend-inner-icon="mdi-magnify"
                 clearable
+                hide-details
+                single-line
               />
               <v-dialog
                 v-model="editDialog"
                 :persistent="!viewOnly"
                 max-width="600px"
+                @click:outside="closeDialog"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn color="primary" v-bind="attrs" v-on="on">
@@ -37,8 +38,11 @@
                   </v-btn>
                 </template>
                 <v-card>
-                  <v-card-title style="background-color: #5ddb5d">
-                    <span class="headline">{{ formTitle }}</span>
+                  <v-card-title
+                    class="headline"
+                    style="background-color: #5ddb5d"
+                  >
+                    {{ formTitle }}
                   </v-card-title>
                   <v-card-text>
                     <v-container>
@@ -47,10 +51,10 @@
                           <v-col>
                             <v-text-field
                               v-model="editedItem.name"
-                              label="Name"
                               :autofocus="editedIndex === -1"
-                              :rules="[uniqueName, required]"
+                              :rules="[rules.required, rules.uniqueName]"
                               autocomplete="false"
+                              label="Name"
                             />
                           </v-col>
                         </v-row>
@@ -58,7 +62,9 @@
                           <v-col>
                             <v-text-field
                               v-model="editedItem.address"
+                              append-icon="mdi-map-marker"
                               label="Address"
+                              @click:append="sendEmail(editedItem)"
                             />
                           </v-col>
                         </v-row>
@@ -80,9 +86,9 @@
                           <v-col cols="12">
                             <v-text-field
                               v-model="editedItem.email"
-                              label="Email"
-                              :rules="[email]"
+                              :rules="[rules.email]"
                               append-icon="mdi-email-outline"
+                              label="Email"
                               @click:append="sendEmail"
                             />
                           </v-col>
@@ -91,9 +97,9 @@
                           <v-col cols="12">
                             <v-text-field
                               v-model="editedItem.website"
-                              label="Website"
-                              :rules="[url]"
+                              :rules="[rules.url]"
                               append-icon="mdi-open-in-new"
+                              label="Website"
                               @click:append="openSite"
                             />
                           </v-col>
@@ -108,9 +114,9 @@
                       </v-btn>
                       <v-spacer />
                       <v-btn
+                        :disabled="!valid"
                         color="blue darken-1"
                         text
-                        :disabled="!valid"
                         @click="saveItem"
                       >
                         Save
@@ -163,19 +169,15 @@
             </span>
           </template>
           <template v-slot:item.address="{ item }">
-            <img
-              v-if="item.address"
-              class="pin mr-1"
-              src="@/assets/pin.png"
-              alt="test"
-              @click="openMap(item)"
-            />
+            <v-icon class="mr-1" color="red" small @click="openMap(item)">
+              mdi-map-marker
+            </v-icon>
             {{ item.address }}
           </template>
           <template v-slot:item.actions="{ item }">
             <v-row class="mr-0">
               <v-spacer></v-spacer>
-              <v-icon small class="mr-2" @click="editItem(item)">
+              <v-icon class="mr-2" small @click="editItem(item)">
                 mdi-pencil
               </v-icon>
               <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -189,6 +191,7 @@
 
 <script>
 import VuePhoneNumberInput from 'vue-phone-number-input'
+import sharedRules from '../rules'
 import 'vue-phone-number-input/dist/vue-phone-number-input.css'
 
 export default {
@@ -198,7 +201,6 @@ export default {
   },
   data() {
     return {
-      click: false,
       loading: true,
       customers: [],
       search: null,
@@ -232,6 +234,23 @@ export default {
           align: 'end',
         },
       ],
+      rules: {
+        ...sharedRules,
+        uniqueName: (val) => {
+          if (!val) return true
+          if (this.editedName) {
+            if (
+              this.editedName.toLowerCase() ===
+              this.editedItem.name.toLowerCase()
+            )
+              return true
+          }
+          const exists = this.customers.findIndex(
+            (x) => x.name.toLowerCase() === val.toLowerCase(),
+          )
+          return exists === -1 || 'Customer name already exists'
+        },
+      },
     }
   },
   computed: {
@@ -278,6 +297,9 @@ export default {
           })
       }
     },
+    dblClickRow(event, row) {
+      this.viewItem(row.item)
+    },
     viewItem(item) {
       this.viewOnly = true
       this.editItem(item)
@@ -298,7 +320,7 @@ export default {
         .delete('/customers', { data: { id: this.editedItem._id } })
         .then(() => {
           this.customers.splice(this.editedIndex, 1)
-          this.closeDelete()
+          this.reset()
           this.$toasted.success(`${this.editedItem.name} deleted`)
         })
         .catch((e) => {
@@ -306,63 +328,27 @@ export default {
           this.$toasted.error(`Error deleting the ${this.editedItem.name}`)
         })
     },
+    closeDialog() {
+      if (!this.viewOnly) return
+      this.reset()
+    },
     reset() {
       this.editDialog = false
       this.deleteDialog = false
-      this.$nextTick(() => {
-        this.editedItem = {}
-        this.editedIndex = -1
-        this.editedName = null
-        this.viewOnly = false
-        this.$refs.form.resetValidation()
-      })
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.editedItem = {}
+          this.editedIndex = -1
+          this.editedName = null
+          this.viewOnly = false
+          this.$refs.form.resetValidation()
+        })
+      }, 500)
     },
     openMap(item) {
       const query = encodeURIComponent(`${item.name} ${item.address}`)
       const url = `https://www.google.com/maps/search/?api=1&query=${query}`
       window.open(url, '_blank')
-    },
-    viewRow(e) {
-      if (!this.click) {
-        this.click = true
-        setTimeout(() => {
-          this.click = false
-        }, 500)
-        return
-      }
-      this.viewItem(e)
-    },
-    uniqueName(val) {
-      if (!val) return true
-      if (this.editedName) {
-        if (
-          this.editedName.toLowerCase() === this.editedItem.name.toLowerCase()
-        )
-          return true
-      }
-      const exists = this.customers.findIndex(
-        (x) => x.name.toLowerCase() === val.toLowerCase(),
-      )
-      return exists === -1 || 'Customer name already exists'
-    },
-    required(val) {
-      return !!val || 'Required'
-    },
-    email(val) {
-      return (
-        !val ||
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) ||
-        'Invalid Email'
-      )
-    },
-    url(val) {
-      return (
-        !val ||
-        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(
-          val,
-        ) ||
-        'Invalid URL'
-      )
     },
     openSite() {
       if (!this.editedItem.website) return
@@ -379,12 +365,5 @@ export default {
 <style>
 tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.03);
-}
-.pin {
-  cursor: pointer;
-  width: 10px;
-  height: 16px;
-  position: relative;
-  top: 2px;
 }
 </style>
