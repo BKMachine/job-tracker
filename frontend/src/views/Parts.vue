@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row justify="center" class="mt-6">
+    <v-row class="mt-10" justify="center">
       <v-col cols="9">
         <v-container class="mb-4">
           <v-row>
@@ -17,31 +17,31 @@
             <v-spacer />
             <v-dialog v-model="filterDialog" max-width="600px" persistent>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" color="#71f17a" v-on="on">
-                  Filter<v-icon class="ml-1">mdi-filter-plus-outline</v-icon>
+                <v-btn v-bind="attrs" v-on="on">
+                  Filter
+                  <v-icon class="ml-1">mdi-filter-plus-outline</v-icon>
                 </v-btn>
               </template>
               <v-card>
-                <v-card-title style="background-color: #71f17a">
-                  Filter
-                </v-card-title>
+                <v-card-title> Filter </v-card-title>
+                <v-divider />
                 <v-card-text>
                   <v-container>
-                    <v-form ref="filterForm" v-model="filterFormValid">
+                    <v-form ref="filterForm" v-model="valid">
                       <v-row class="mt-2">
                         <v-select
                           v-model="filterKey"
-                          label="Filter By"
                           :items="filterKeys"
                           :rules="[rules.required]"
+                          label="Filter By"
                         />
                       </v-row>
                       <v-row v-if="filterKey === 'Customer'">
                         <v-select
-                          v-model="filterCustomer"
+                          v-model="filterValue"
                           :items="customers"
-                          label="Customer Name"
                           :rules="[rules.required]"
+                          label="Customer Name"
                         />
                       </v-row>
                     </v-form>
@@ -51,9 +51,9 @@
                   <v-btn text @click="closeFilterDialog"> Cancel </v-btn>
                   <v-spacer />
                   <v-btn
-                    text
+                    :disabled="!valid"
                     color="blue darken-1"
-                    :disabled="!filterFormValid"
+                    text
                     @click="addFilter"
                   >
                     Apply
@@ -66,12 +66,12 @@
         <v-data-table
           :headers="headers"
           :items="parts"
-          sort-by="name"
-          class="elevation-2"
-          :search="search"
-          hide-default-footer
-          disable-pagination
           :loading="loading"
+          :search="search"
+          class="elevation-2"
+          sort-by="name"
+          disable-pagination
+          hide-default-footer
           @dblclick:row="dblClickRow"
         >
           <template v-slot:top>
@@ -80,14 +80,14 @@
               <v-spacer />
               <v-text-field
                 v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
                 class="mr-3"
-                :clearable="true"
+                label="Search"
+                prepend-icon="mdi-magnify"
+                clearable
+                hide-details
+                single-line
               />
-              <v-btn color="primary" dark @click="newPart"> New Part </v-btn>
+              <v-btn color="primary" @click="newPart"> New Part </v-btn>
             </v-toolbar>
           </template>
           <template v-slot:item.name="{ item }">
@@ -110,26 +110,26 @@
 
 <script>
 import InfiniteLoading from 'vue-infinite-loading'
+import sharedRules from '../rules'
 
 export default {
   name: 'Parts',
-  components: {
-    InfiniteLoading,
-  },
+  components: { InfiniteLoading },
   data() {
     return {
       loading: true,
       parts: [],
       customers: [],
-      filters: ['thing1', 'thing2'],
-      filterKeys: ['Customer', 'Stock Qty'],
-      filterFormValid: false,
-      comparisons: [{ text: '=', value: 'equal' }],
-      filterDialog: false,
       search: null,
-      filterKey: null,
       page: 1,
       infiniteId: 0,
+      filterDialog: false,
+      filterKeys: ['Customer'],
+      filterKey: null,
+      filterComparison: null,
+      filterValue: null,
+      filters: [],
+      valid: false,
       headers: [
         {
           text: 'Name',
@@ -153,9 +153,7 @@ export default {
         },
       ],
       rules: {
-        required(val) {
-          return !!val || 'Required'
-        },
+        ...sharedRules,
       },
     }
   },
@@ -167,13 +165,16 @@ export default {
   methods: {
     infiniteHandler($state) {
       this.$axios
-        .get('/parts', {
-          params: {
-            limit: 50,
-            page: this.page,
-            search: this.search,
+        .post(
+          '/parts',
+          { filters: this.filters },
+          {
+            params: {
+              limit: 50,
+              page: this.page,
+            },
           },
-        })
+        )
         .then(({ data }) => {
           this.loading = false
           if (data.parts.length) {
@@ -205,17 +206,30 @@ export default {
       if (text.length <= maxLength) return text
       return `${text.slice(0, maxLength).trim()}...`
     },
+    addFilter() {
+      if (this.filterKey === 'Customer') this.filterComparison = 'eq'
+      this.filters.push({
+        key: this.filterKey.toLowerCase(),
+        comparison: this.filterComparison,
+        value: this.filterValue,
+      })
+      this.closeFilterDialog()
+      this.changeType()
+    },
     removeFilter(index) {
       this.filters.splice(index, 1)
       this.changeType()
     },
     closeFilterDialog() {
       this.filterDialog = false
-      this.$refs.filterForm.reset()
-    },
-    addFilter() {
-      this.filters.push('New Filter')
-      this.closeFilterDialog()
+      setTimeout(() => {
+        this.$nextTick(() => {
+          this.filterKey = null
+          this.filterComparison = null
+          this.filterValue = null
+          this.$refs.filterForm.reset()
+        })
+      }, 500)
     },
   },
 }
