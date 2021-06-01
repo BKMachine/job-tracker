@@ -101,6 +101,10 @@
           <template v-slot:item.description="{ item }">
             {{ trimDesc(item.description) }}
           </template>
+          <template v-slot:item.stock.quantity="{ item }">
+            <v-icon class="mr-1" small>mdi-clipboard-edit-outline</v-icon>
+            {{ item.stock.quantity }}
+          </template>
         </v-data-table>
       </v-col>
     </v-row>
@@ -202,7 +206,7 @@ export default {
       this.$router.push('/part/new')
     },
     trimDesc(text) {
-      const maxLength = 50
+      const maxLength = 36
       if (text.length <= maxLength) return text
       return `${text.slice(0, maxLength).trim()}...`
     },

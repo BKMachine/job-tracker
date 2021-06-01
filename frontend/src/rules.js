@@ -58,8 +58,14 @@ const re_weburl = new RegExp(
   'i',
 )
 
+const number = (val) => {
+  if (!val) return true
+  return /^[0-9.]+$/.test(val) || 'Must be a number.'
+}
+
 export default {
   required,
   email,
   url,
+  number,
 }

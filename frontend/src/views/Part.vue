@@ -1,198 +1,195 @@
 <template>
-  <div>
+  <v-container>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-container v-else class="mt-6">
-      <v-row justify="center">
-        <v-col cols="9">
-          <v-card>
-            <v-card-title :class="{ editing: isEdited }">
-              <div class="text-h4">{{ partName }}</div>
-              <v-divider vertical class="mx-4 mt-0 mb-0"></v-divider>
-              <v-icon class="mr-1">mdi-history</v-icon>
-              <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
-              <div class="text-body-1">
-                In Stock:
-                <span class="font-weight-bold">
-                  {{ part.stock.quantity || 0 }}
-                </span>
-              </div>
-              <div class="ml-4 text-body-1">
-                Location:
-                <span class="font-weight-bold">
-                  {{ part.stock.location || 'None' }}
-                </span>
-              </div>
-              <v-spacer />
-              <div v-if="isEdited">
-                <v-btn class="red lighten-2 mr-2" @click="cancel">Cancel</v-btn>
-                <v-btn class="green lighten-2" @click="save">Save</v-btn>
-              </div>
-            </v-card-title>
-            <v-card-text class="mt-3">
-              <v-form v-model="valid" @change="isEdited === true">
-                <v-container>
-                  <v-row class="mt-0">
-                    <v-col cols="8">
-                      <v-row>
-                        <v-col cols="9">
-                          <v-text-field
-                            v-model="part.name"
-                            label="Name"
-                            :rules="rules.req"
-                            autocomplete="false"
-                          />
-                        </v-col>
-                        <v-col cols="3">
-                          <v-text-field v-model="part.revision" label="Rev" />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12">
-                          <v-select
-                            v-model="part.customer"
-                            :items="customers"
-                            label="Customer"
-                            :rules="rules.req"
-                          />
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                    <v-col cols="4">
-                      <PartThumbnail
-                        :thumbnail="part.thumbnail"
-                        @thumbUpload="saveThumb"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-text-field
-                        v-model="part.description"
-                        label="Description"
-                      />
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-textarea v-model="part.notes" label="Notes" />
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-form>
-            </v-card-text>
-          </v-card>
-          <v-expansion-panels>
-            <v-expansion-panel class="mt-3">
-              <v-expansion-panel-header class="body-1">
-                Material
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-row>
-                  <v-col cols="3" style="text-align: center">
-                    <v-radio-group
-                      v-model="part.material.shape"
-                      row
-                      class="pa-0 ma-0 mt-1"
-                    >
-                      <v-radio label="Square" value="square" />
-                      <v-radio label="Round" value="round" />
-                    </v-radio-group>
-                  </v-col>
-                  <v-col cols="3" style="text-align: center">
-                    <v-radio-group row class="pa-0 ma-0 mt-1">
-                      <v-radio label="Solid" value="solid" />
-                      <v-radio label="Tubing" value="tubing" />
-                    </v-radio-group>
-                  </v-col>
-                  <v-col cols="3" style="text-align: center">
-                    <v-radio-group
-                      v-model="part.material.workpiece"
-                      :disabled="part.material.shape === 'square'"
-                      row
-                      class="pa-0 ma-0 mt-1"
-                    >
-                      <v-radio label="Bars" value="bars" />
-                      <v-radio label="Blanks" value="blanks" />
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
+    <v-row v-else class="mt-10" justify="center">
+      <v-col cols="9">
+        <v-card elevation="3">
+          <v-card-title :class="{ editing: isEdited }">
+            <div class="text-h4">{{ partName }}</div>
+            <v-divider class="mx-4" vertical></v-divider>
+            <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
+            <div class="text-body-1">
+              In Stock:
+              <span class="font-weight-bold">
+                {{ part.stock.quantity || 0 }}
+              </span>
+            </div>
+            <div class="ml-4 text-body-1">
+              Location:
+              <span class="font-weight-bold">
+                {{ part.stock.location || 'None' }}
+              </span>
+            </div>
+            <v-spacer />
+            <div v-if="isEdited">
+              <v-btn class="red lighten-2 mr-2" @click="cancel">Cancel</v-btn>
+              <v-btn class="green lighten-2" @click="save">Save</v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text class="mt-3">
+            <v-form v-model="valid" @change="isEdited === true">
+              <v-container>
+                <v-row class="mt-0">
+                  <v-col cols="8">
                     <v-row>
-                      <v-col cols="6">
+                      <v-col cols="9">
                         <v-text-field
-                          v-model="part.material.materialType"
-                          label="Type"
-                          :rules="rules.req"
+                          v-model="part.name"
+                          :rules="[rules.required]"
+                          label="Name"
                         />
                       </v-col>
-                      <v-col v-if="part.material.shape === 'round'" cols="2">
-                        <v-text-field
-                          v-model="part.material.diameter"
-                          label="Diameter"
-                          :rules="rules.number"
-                        />
+                      <v-col cols="3">
+                        <v-text-field v-model="part.revision" label="Rev" />
                       </v-col>
-                      <v-col v-else cols="2">
-                        <v-text-field
-                          v-model="part.material.height"
-                          label="Height"
-                          :rules="rules.number"
-                        />
-                        X
-                        <v-text-field
-                          v-model="part.material.width"
-                          label="Width"
-                          :rules="rules.number"
-                        />
-                      </v-col>
-                      <v-col cols="2">
-                        <v-text-field
-                          v-model="part.material.partLength"
-                          label="Finish Length"
-                          :rules="rules.number"
-                        />
-                      </v-col>
-                      <v-col cols="2">
-                        <v-text-field
-                          v-model="part.material.cutLength"
-                          label="Saw Length"
-                          :rules="rules.number"
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12">
+                        <v-select
+                          v-model="part.customer"
+                          :items="customers"
+                          :rules="[rules.required]"
+                          label="Customer"
                         />
                       </v-col>
                     </v-row>
                   </v-col>
-                </v-row>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel class="mt-3">
-              <v-expansion-panel-header class="body-1">
-                Images
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-row>
-                  <v-col>
-                    <PartImages :images="part.images" />
+                  <v-col cols="4">
+                    <PartThumbnail
+                      :thumbnail="part.thumbnail"
+                      @thumbUpload="saveThumb"
+                    />
                   </v-col>
                 </v-row>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="part.description"
+                      label="Description"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-textarea v-model="part.notes" label="Notes" />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-card-text>
+        </v-card>
+        <v-expansion-panels>
+          <v-expansion-panel>
+            <v-expansion-panel-header class="body-1 font-weight-medium">
+              Material
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col cols="3" style="text-align: center">
+                  <v-radio-group
+                    v-model="part.material.shape"
+                    class="pa-0 ma-0 mt-1"
+                    row
+                  >
+                    <v-radio label="Square" value="square" />
+                    <v-radio label="Round" value="round" />
+                  </v-radio-group>
+                </v-col>
+                <v-col cols="3" style="text-align: center">
+                  <v-radio-group class="pa-0 ma-0 mt-1" row>
+                    <v-radio label="Solid" value="solid" />
+                    <v-radio label="Tubing" value="tubing" />
+                  </v-radio-group>
+                </v-col>
+                <v-col cols="3" style="text-align: center">
+                  <v-radio-group
+                    v-model="part.material.workpiece"
+                    :disabled="part.material.shape === 'square'"
+                    class="pa-0 ma-0 mt-1"
+                    row
+                  >
+                    <v-radio label="Bars" value="bars" />
+                    <v-radio label="Blanks" value="blanks" />
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-row>
+                    <v-col cols="6">
+                      <v-text-field
+                        v-model="part.material.materialType"
+                        :rules="[rules.required]"
+                        label="Type"
+                      />
+                    </v-col>
+                    <v-col v-if="part.material.shape === 'round'" cols="2">
+                      <v-text-field
+                        v-model="part.material.diameter"
+                        :rules="[rules.number]"
+                        label="Diameter"
+                      />
+                    </v-col>
+                    <v-col v-else cols="2">
+                      <v-text-field
+                        v-model="part.material.height"
+                        :rules="[rules.number]"
+                        label="Height"
+                      />
+                      X
+                      <v-text-field
+                        v-model="part.material.width"
+                        :rules="[rules.number]"
+                        label="Width"
+                      />
+                    </v-col>
+                    <v-col cols="2">
+                      <v-text-field
+                        v-model="part.material.partLength"
+                        :rules="[rules.number]"
+                        label="Finish Length"
+                      />
+                    </v-col>
+                    <v-col cols="2">
+                      <v-text-field
+                        v-model="part.material.cutLength"
+                        :rules="[rules.number]"
+                        label="Saw Length"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header class="body-1 font-weight-medium">
+              Images
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col>
+                  NYI
+                  <!--                  <PartImages :images="part.images" />-->
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-// import _ from 'lodash'
-import PartImages from '@/components/PartImages'
+// import PartImages from '@/components/PartImages'
 import PartThumbnail from '@/components/PartThumbnail'
+import sharedRules from '../rules'
 
 export default {
   name: 'Part',
   components: {
-    PartImages,
+    // PartImages,
     PartThumbnail,
   },
   data() {
@@ -204,52 +201,20 @@ export default {
       part: {
         material: {},
         stock: {},
-        images: [
-          {
-            url:
-              'https://sourcehorizon.com/wp-content/uploads/2018/11/BW-IMGP6447.jpg',
-          },
-          {
-            url:
-              'https://im01.itaiwantrade.com/9beab079-811b-4dc8-9a87-bcca807786fe/CNC-Machined-Part.jpg',
-          },
-          {
-            url:
-              'https://base.imgix.net/files/base/ebm/machinedesign/image/2019/04/machinedesign_18370_1_cnc_machined_parts.png',
-          },
-          {
-            url:
-              'http://www.conexstainless.com/backend/productImage/brass-cnc-machined-parts--screw-machine-components-02.jpg',
-          },
-          {
-            url:
-              'https://www.ejbasler.com/wp-content/uploads/2020/09/Oxygen-Sensor-Dome-Mill-Turn1.jpg',
-          },
-        ],
+        images: [],
       },
       originalPart: {
         material: {},
         stock: {},
+        images: [],
       },
       valid: null,
       rules: {
-        req: [(val) => (val || '').length > 0 || 'This field is required'],
-        number: [
-          (val) => {
-            if (!val) return true
-            return /^[0-9.]+$/.test(val) || 'Must be a number.'
-          },
-        ],
+        ...sharedRules,
       },
     }
   },
   watch: {
-    /*part: {
-      handler() {
-        this.isEdited = !_.isEqual(this.part, this.originalPart)
-      },
-      deep: true,
-    },*/
     'part.material.shape'(val) {
       if (val === 'square') {
         this.$nextTick(() => {
@@ -264,11 +229,6 @@ export default {
     },
   },
   computed: {
-    partsPerLength() {
-      if (!this.part.material.partLength) return 'null'
-      const length = parseFloat(this.part.material.partLength)
-      return Math.floor(144 / length)
-    },
     partName() {
       if (this.part.name && this.isEdited) return `Editing: ${this.part.name}`
       return this.part.name || 'New Part'
@@ -313,9 +273,6 @@ export default {
         this.isEdited = false
       })
     },
-    required(val) {
-      return (val || '').length > 0 || 'This field is required'
-    },
     saveThumb(url) {
       this.part.thumbnail = url
       this.save()
@@ -330,9 +287,6 @@ export default {
   background-color: #c58cff;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-}
-.v-card__title.editing {
-  /*background-color: #f78cff;*/
 }
 .v-card__text .col {
   padding-bottom: 0;
