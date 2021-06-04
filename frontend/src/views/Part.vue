@@ -81,83 +81,105 @@
         <v-expansion-panels v-model="expanded" class="mt-3">
           <v-expansion-panel>
             <v-expansion-panel-header>
-              <span class="body-1 font-weight-medium">Material</span>
-              <span>{{ materialSummary }}</span>
+              <span>
+                <span class="body-1 font-weight-medium">Material:</span>
+                <span class="ml-5" v-html="materialSummary" />
+              </span>
             </v-expansion-panel-header>
+            <!--            <v-divider v-if="expanded === 0" class="pt-0 mb-3" />-->
             <v-expansion-panel-content>
               <v-row>
-                <v-col cols="3" style="text-align: center">
-                  <v-radio-group
-                    v-model="part.material.shape"
-                    class="pa-0 ma-0 mt-1"
-                    row
-                  >
-                    <v-radio label="Square" value="square" />
-                    <v-radio label="Round" value="round" />
-                  </v-radio-group>
-                </v-col>
-                <v-col cols="3" style="text-align: center">
-                  <v-radio-group class="pa-0 ma-0 mt-1" row>
-                    <v-radio label="Solid" value="solid" />
-                    <v-radio label="Tubing" value="tubing" />
-                  </v-radio-group>
-                </v-col>
-                <v-col cols="3" style="text-align: center">
-                  <v-radio-group
-                    v-model="part.material.workpiece"
-                    :disabled="part.material.shape === 'square'"
-                    class="pa-0 ma-0 mt-1"
-                    row
-                  >
-                    <v-radio label="Bars" value="bars" />
-                    <v-radio label="Blanks" value="blanks" />
-                  </v-radio-group>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
+                <v-col cols="6">
                   <v-row>
-                    <v-col cols="6">
+                    <v-col cols="12">
                       <v-text-field
-                        v-model="part.material.materialType"
+                        v-model="part.material.type"
                         :rules="[rules.required]"
                         label="Type"
                       />
                     </v-col>
-                    <v-col v-if="part.material.shape === 'round'" cols="2">
-                      <v-text-field
-                        v-model="part.material.diameter"
-                        :rules="[rules.number]"
-                        label="Diameter"
-                      />
-                    </v-col>
-                    <v-col v-else cols="2">
-                      <v-text-field
-                        v-model="part.material.height"
-                        :rules="[rules.number]"
-                        label="Height"
-                      />
-                      X
-                      <v-text-field
-                        v-model="part.material.width"
-                        :rules="[rules.number]"
-                        label="Width"
-                      />
-                    </v-col>
-                    <v-col cols="2">
+                  </v-row>
+                  <v-row>
+                    <template v-if="part.material.shape === 'round'">
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="part.material.od"
+                          :rules="[rules.number]"
+                          label="Outer Diameter"
+                        />
+                      </v-col>
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="part.material.id"
+                          :disabled="part.material.style === 'solid'"
+                          :rules="[rules.number]"
+                          label="Inner Diameter"
+                        />
+                      </v-col>
+                    </template>
+                    <template v-else>
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="part.material.height"
+                          :rules="[rules.number]"
+                          label="Height"
+                        />
+                      </v-col>
+                      <v-col cols="6">
+                        <v-text-field
+                          v-model="part.material.width"
+                          :rules="[rules.number]"
+                          label="Width"
+                        />
+                      </v-col>
+                    </template>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="6">
                       <v-text-field
                         v-model="part.material.partLength"
                         :rules="[rules.number]"
                         label="Finish Length"
                       />
                     </v-col>
-                    <v-col cols="2">
+                    <v-col cols="6">
                       <v-text-field
                         v-model="part.material.cutLength"
-                        :rules="[rules.number]"
+                        :rules="[rules.number, rules.longerThan]"
                         label="Saw Length"
                       />
                     </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="3" />
+                <v-col cols="3">
+                  <v-row class="my-auto">
+                    <v-radio-group
+                      v-model="part.material.shape"
+                      class="pa-0 ma-0 mt-1"
+                    >
+                      <v-radio label="Square" value="square" />
+                      <v-radio label="Round" value="round" />
+                    </v-radio-group>
+                  </v-row>
+                  <v-row>
+                    <v-radio-group
+                      v-model="part.material.style"
+                      class="pa-0 ma-0 mt-1"
+                    >
+                      <v-radio label="Solid" value="solid" />
+                      <v-radio label="Tubing" value="tubing" />
+                    </v-radio-group>
+                  </v-row>
+                  <v-row>
+                    <v-radio-group
+                      v-model="part.material.workpiece"
+                      :disabled="part.material.shape === 'square'"
+                      class="pa-0 ma-0 mt-1"
+                    >
+                      <v-radio label="Bars" value="bars" />
+                      <v-radio label="Blanks" value="blanks" />
+                    </v-radio-group>
                   </v-row>
                 </v-col>
               </v-row>
@@ -200,7 +222,11 @@ export default {
       editing: false,
       loading: true,
       part: {
-        material: {},
+        material: {
+          shape: 'square',
+          style: 'solid',
+          workpiece: 'blanks',
+        },
         stock: {},
         images: [],
       },
@@ -212,6 +238,14 @@ export default {
       valid: null,
       rules: {
         ...sharedRules,
+        longerThan: (val) => {
+          console.log(typeof val)
+          return (
+            !val ||
+            parseFloat(val) >= parseFloat(this.part.material.partLength) ||
+            'Shorter than the part.'
+          )
+        },
       },
       expanded: null,
     }
@@ -236,8 +270,29 @@ export default {
       return this.part.name || 'New Part'
     },
     materialSummary() {
-      if (this.expanded === 0) return ''
-      return 'Test Ø'
+      if (
+        !this.part.material ||
+        !Object.keys(this.part.material).length ||
+        !this.part.material.type
+      )
+        return ''
+      let str = '<span class="font-weight-light">'
+      str +=
+        this.part.material.shape === 'round'
+          ? `${this.part.material.od || '-'} Ø`
+          : `${this.part.material.height || '-'} x ${
+              this.part.material.width || '-'
+            }`
+      str += '<span class="font-weight-normal mx-2">'
+      str += this.part.material.type
+      str += '</span>'
+      str += this.part.material.style
+      str += '<span class="ml-8">'
+      str += this.part.material.workpiece
+      str += ' cut @ '
+      str += this.part.material.cutLength || '-'
+      str += '</span></span>'
+      return str
     },
   },
   async mounted() {
