@@ -78,10 +78,11 @@
             </v-form>
           </v-card-text>
         </v-card>
-        <v-expansion-panels>
+        <v-expansion-panels v-model="expanded" class="mt-3">
           <v-expansion-panel>
-            <v-expansion-panel-header class="body-1 font-weight-medium">
-              Material
+            <v-expansion-panel-header>
+              <span class="body-1 font-weight-medium">Material</span>
+              <span>{{ materialSummary }}</span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-row>
@@ -162,7 +163,7 @@
               </v-row>
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel>
+          <!--          <v-expansion-panel>
             <v-expansion-panel-header class="body-1 font-weight-medium">
               Images
             </v-expansion-panel-header>
@@ -170,11 +171,11 @@
               <v-row>
                 <v-col>
                   NYI
-                  <!--                  <PartImages :images="part.images" />-->
+                  &lt;!&ndash;                  <PartImages :images="part.images" />&ndash;&gt;
                 </v-col>
               </v-row>
             </v-expansion-panel-content>
-          </v-expansion-panel>
+          </v-expansion-panel>-->
         </v-expansion-panels>
       </v-col>
     </v-row>
@@ -212,6 +213,7 @@ export default {
       rules: {
         ...sharedRules,
       },
+      expanded: null,
     }
   },
   watch: {
@@ -232,6 +234,10 @@ export default {
     partName() {
       if (this.part.name && this.isEdited) return `Editing: ${this.part.name}`
       return this.part.name || 'New Part'
+    },
+    materialSummary() {
+      if (this.expanded === 0) return ''
+      return 'Test Ø'
     },
   },
   async mounted() {
