@@ -1,7 +1,6 @@
 <template>
   <div>
     <div
-      v-if="!thumbnail"
       class="drop"
       :class="{ dragging }"
       @dragover.prevent="dragOver"
@@ -9,19 +8,9 @@
       @drop.prevent="drop($event)"
     >
       <img src="@/assets/image_icon.png" alt="" />
-      <v-progress-circular :value="progress" :rotate="-90" color="primary">
+      <!--      <v-progress-circular :value="progress" :rotate="-90" color="primary">
         {{ progress }}
-      </v-progress-circular>
-    </div>
-    <div
-      v-else
-      class="thumb"
-      :class="{ dragging }"
-      @dragover.prevent="dragOver"
-      @dragleave.prevent="dragLeave"
-      @drop.prevent="drop($event)"
-    >
-      <img :src="thumbnail" alt="" />
+      </v-progress-circular>-->
     </div>
   </div>
   <!--    <img
@@ -37,7 +26,7 @@
 </template>
 
 <script>
-import { uploadToS3 } from '@/plugins/s3_uploader'
+// import { uploadToS3 } from '@/plugins/s3_uploader'
 
 export default {
   name: 'PartThumbnail',
@@ -56,8 +45,9 @@ export default {
     dragLeave() {
       this.dragging = false
     },
-    drop(e) {
-      this.dragging = false
+    drop() {
+      return
+      /*this.dragging = false
       const files = e.dataTransfer.files
       const file = files[0]
       console.log(file)
@@ -76,7 +66,7 @@ export default {
         })
         .finally(() => {
           this.progress = 0
-        })
+        })*/
     },
   },
 }
