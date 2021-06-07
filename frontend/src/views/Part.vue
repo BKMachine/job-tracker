@@ -7,7 +7,9 @@
           <v-card-title :class="{ editing: isEdited }">
             <div class="text-h4">{{ partName }}</div>
             <v-divider class="mx-4" vertical></v-divider>
-            <v-icon class="mr-2">mdi-clipboard-edit-outline</v-icon>
+            <v-icon class="mr-2" @click="openStock($route.params.id)">
+              mdi-clipboard-edit-outline
+            </v-icon>
             <div class="text-body-1">
               In Stock:
               <span class="font-weight-bold">
@@ -324,6 +326,9 @@ export default {
     }
   },
   methods: {
+    openStock(id) {
+      this.$router.push(`/part/${id}/stock`)
+    },
     cancel() {
       this.part = Object.assign({}, this.originalPart)
     },

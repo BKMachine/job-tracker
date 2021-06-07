@@ -102,7 +102,9 @@
             {{ trimDesc(item.description) }}
           </template>
           <template v-slot:item.stock.quantity="{ item }">
-            <v-icon class="mr-1" small>mdi-clipboard-edit-outline</v-icon>
+            <v-icon class="mr-1" small @click="openStock(item._id)">
+              mdi-clipboard-edit-outline
+            </v-icon>
             {{ item.stock.quantity }}
           </template>
         </v-data-table>
@@ -167,6 +169,9 @@ export default {
     })
   },
   methods: {
+    openStock(id) {
+      this.$router.push(`/part/${id}/stock`)
+    },
     infiniteHandler($state) {
       this.$axios
         .post(
