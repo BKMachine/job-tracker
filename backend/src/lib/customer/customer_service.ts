@@ -17,10 +17,6 @@ async function update(data: CustomerDoc): Promise<CustomerDoc> {
   return updatedCustomer
 }
 
-async function remove(id: string): Promise<void> {
-  await Customer.findByIdAndRemove(id)
-}
-
 async function listNames(): Promise<string[]> {
   const docs = await Customer.find({}, 'name')
   return docs
@@ -38,6 +34,5 @@ export default {
   list,
   add,
   update,
-  remove,
   listNames,
 }

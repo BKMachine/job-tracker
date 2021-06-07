@@ -29,16 +29,6 @@ router
       next(e)
     }
   })
-  .delete(async (req, res, next) => {
-    const { id } = req.body
-    if (!id) return res.sendStatus(400)
-    try {
-      await CustomerService.remove(id)
-      res.sendStatus(204)
-    } catch (e) {
-      next(e)
-    }
-  })
 
 router.get('/customers/names', async (req, res, next) => {
   try {

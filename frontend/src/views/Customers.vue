@@ -131,33 +131,6 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-dialog v-model="deleteDialog" max-width="500px">
-                <v-card>
-                  <v-card-title
-                    class="headline"
-                    style="background-color: #ff819b"
-                  >
-                    {{ editedItem.name }}
-                  </v-card-title>
-                  <v-card-text class="body-1 mt-6 pb-0">
-                    Are you sure you want to delete this customer?
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn color="grey darken-1" text @click="reset">
-                      No
-                    </v-btn>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="deleteItemConfirm"
-                    >
-                      Yes
-                    </v-btn>
-                    <v-spacer />
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
             </v-toolbar>
           </template>
           <template v-slot:item.name="{ item }">
@@ -180,7 +153,6 @@
               <v-icon class="mr-2" small @click="editItem(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
             </v-row>
           </template>
         </v-data-table>
@@ -208,7 +180,6 @@ export default {
       editedItem: {},
       editedName: null,
       editDialog: false,
-      deleteDialog: false,
       valid: false,
       viewOnly: false,
       headers: [
@@ -310,31 +281,12 @@ export default {
       this.editedName = item.name
       this.editDialog = true
     },
-    deleteItem(item) {
-      this.editedIndex = this.customers.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.deleteDialog = true
-    },
-    deleteItemConfirm() {
-      this.$axios
-        .delete('/customers', { data: { id: this.editedItem._id } })
-        .then(() => {
-          this.customers.splice(this.editedIndex, 1)
-          this.reset()
-          this.$toasted.success(`${this.editedItem.name} deleted`)
-        })
-        .catch((e) => {
-          console.error(e)
-          this.$toasted.error(`Error deleting the ${this.editedItem.name}`)
-        })
-    },
     closeDialog() {
       if (!this.viewOnly) return
       this.reset()
     },
     reset() {
       this.editDialog = false
-      this.deleteDialog = false
       setTimeout(() => {
         this.$nextTick(() => {
           this.editedItem = {}
