@@ -2,6 +2,10 @@ import Customer, { CustomerDoc } from './customer_model'
 
 async function list(): Promise<CustomerDoc[]> {
   return Customer.find()
+  /* TODO
+  Consider only showing customers active within the last 2 years or so
+  with the option to see or search for all customers
+  */
 }
 
 async function add(data: unknown): Promise<CustomerDoc> {
