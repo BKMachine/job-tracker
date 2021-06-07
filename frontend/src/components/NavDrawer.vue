@@ -29,7 +29,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <template slot="append">
+    <!--    <template slot="append">
       <v-list dense nav>
         <v-list-item link to="settings">
           <v-list-item-icon>
@@ -40,7 +40,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-    </template>
+    </template>-->
   </v-navigation-drawer>
 </template>
 
