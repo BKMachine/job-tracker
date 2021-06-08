@@ -41,58 +41,7 @@ export default {
   data() {
     return {
       search: null,
-      headers: [
-        {
-          text: 'Job #',
-          align: 'start',
-          sortable: true,
-          value: 'id',
-        },
-        {
-          text: 'Part #',
-          sortable: true,
-          value: 'partName',
-        },
-        {
-          text: 'Customer',
-          sortable: true,
-          value: 'customer',
-        },
-        {
-          text: 'Qty',
-          value: 'quantity',
-        },
-        {
-          text: 'Due Date',
-          value: 'dueDate',
-        },
-      ],
-      jobs: [
-        {
-          _id: 1,
-          dueDate: '2021-04-14T06:00:00.000Z',
-          partName: 'part',
-          customer: 'customer',
-        },
-        {
-          _id: 2,
-          dueDate: '2021-04-15T06:00:00.000Z',
-          partName: 'part',
-          customer: 'customer',
-        },
-        {
-          _id: 3,
-          dueDate: '2021-04-16T06:00:00.000Z',
-          partName: 'part',
-          customer: 'customer',
-        },
-        {
-          _id: 4,
-          dueDate: '2021-04-30T06:00:00.000Z',
-          partName: 'part',
-          customer: 'customer',
-        },
-      ],
+      jobs: [],
     }
   },
   mounted() {
